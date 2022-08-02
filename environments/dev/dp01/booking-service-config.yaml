@@ -763,4 +763,5 @@ data:
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: booking-service-local
+  name: booking-service-config
+  namespace: dp01-ns

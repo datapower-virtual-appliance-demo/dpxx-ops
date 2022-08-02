@@ -6,7 +6,7 @@ metadata:
 spec:
   license:
     accept: true
-    license: L-RJON-BYDR3Q
+    license: L-RJON-CCCP46
     use: nonproduction
   resources:
     limits:
