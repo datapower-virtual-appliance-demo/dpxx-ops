@@ -1,0 +1,36 @@
+apiVersion: datapower.ibm.com/v1beta3
+kind: DataPowerService
+metadata:
+  namespace: dp01-ns
+  name: dp01
+spec:
+  license:
+    accept: true
+    license: L-RJON-BYDR3Q
+    use: nonproduction
+  resources:
+    limits:
+      memory: 4Gi
+    requests:
+      cpu: 1
+      memory: 4Gi
+  users:
+    - accessLevel: privileged
+      name: admin-secret
+      passwordSecret: admin-credentials
+  domains:
+    - certs:
+        - certType: usrcerts
+          secret: booking-service-secret1
+        - certType: usrcerts
+          secret: booking-service-secret2
+        - certType: usrcerts
+          secret: booking-service-secret3
+      dpApp:
+        config:
+          - booking-service-config
+        local:
+          - booking-service-local
+      name: Booking
+  version: 10.0-cd
+  replicas: 1
