@@ -16,8 +16,8 @@ spec:
       memory: 4Gi
   users:
     - accessLevel: privileged
-      name: admin-secret
-      passwordSecret: admin-credentials
+      name: admin
+      passwordSecret: admin-secret
   domains:
     - certs:
         - certType: usrcerts
