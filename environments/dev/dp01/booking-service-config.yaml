@@ -1,0 +1,766 @@
+apiVersion: v1
+data:
+  BookingServiceBackend.cfg: "top; configure terminal;\n\n# configuration 2df4f9cce83847bab0832a531baf2f33
+    generated Wed Apr 13 18:14:45 2022; firmware version 333705\n\n%if% available
+    \"domain-settings\"\n\ndomain-settings\n  admin-state enabled\n  password-treatment
+    masked\n  config-dir config:///\nexit\n\n%endif%\n\ncrypto\n  certificate \"AliceCert\"
+    \"cert:///Alice-sscert.pem\"\nexit\n\ncrypto\n  certificate \"BookingApplication\"
+    \"cert:///BookingApplication-sscert.pem\"\nexit\n\ncrypto\n  certificate \"BookingService_sscert\"
+    \"cert:///BookingService-sscert.pem\"\nexit\n\ncrypto\n  key \"AliceKey\" \"cert:///Alice-privkey.pem\"\nexit\n\ncrypto\n
+    \ key \"BookingApplication\" \"cert:///BookingApplication-privkey.pem\"\nexit\n\ncrypto\n
+    \ sskey \"sskey\" \"cert:///aes256-sharesecret-1.txt\"\nexit\n\ncrypto\n  idcred
+    \"AlicePair\" \"AliceKey\" \"AliceCert\"\nexit\n\ncrypto\n  idcred \"BookingCredentials\"
+    \"BookingApplication\" \"BookingApplication\"\nexit\n\ncrypto\n  valcred \"BookingSvc_ValCred\"\n
+    \   certificate \"BookingService_sscert\"\n    cert-validation-mode \"legacy\"\n
+    \   use-crl \"on\"\n    require-crl \"off\"\n    crldp \"ignore\"\n    initial-policy-set
+    \"2.5.29.32.0\"\n    explicit-policy \"off\"\n    check-dates \"on\"\n  exit\nexit\n\ncrypto\n
+    \ profile \"system-default\" \"%none%\" option-string OpenSSL-default+Disable-SSLv2+Disable-SSLv3
+    ciphers \"HIGH:MEDIUM:!aNULL:!eNULL:!RC4:@STRENGTH\" clientcalist off\nexit\n\nsslproxy
+    \"system-wsgw-management-loopback\" \"forward\" \"system-default\" client-cache
+    \"on\" client-sess-timeout \"300\" client-cache-size \"100\"\n\ncrypto\n  \n%if%
+    available \"ssl-client\"\n\nssl-client \"ssl-client\"\n  protocols \"TLSv1d0+TLSv1d1+TLSv1d2\"
+    \n  ciphers ECDHE_RSA_WITH_AES_256_GCM_SHA384\n  ciphers ECDHE_RSA_WITH_AES_256_CBC_SHA384\n
+    \ ciphers ECDHE_RSA_WITH_AES_256_CBC_SHA\n  ciphers DHE_DSS_WITH_AES_256_GCM_SHA384\n
+    \ ciphers DHE_RSA_WITH_AES_256_GCM_SHA384\n  ciphers DHE_RSA_WITH_AES_256_CBC_SHA256\n
+    \ ciphers DHE_DSS_WITH_AES_256_CBC_SHA256\n  ciphers DHE_RSA_WITH_AES_256_CBC_SHA\n
+    \ ciphers DHE_DSS_WITH_AES_256_CBC_SHA\n  ciphers RSA_WITH_AES_256_GCM_SHA384\n
+    \ ciphers RSA_WITH_AES_256_CBC_SHA256\n  ciphers RSA_WITH_AES_256_CBC_SHA\n  ciphers
+    ECDHE_RSA_WITH_AES_128_GCM_SHA256\n  ciphers ECDHE_RSA_WITH_AES_128_CBC_SHA256\n
+    \ ciphers ECDHE_RSA_WITH_AES_128_CBC_SHA\n  ciphers DHE_DSS_WITH_AES_128_GCM_SHA256\n
+    \ ciphers DHE_RSA_WITH_AES_128_GCM_SHA256\n  ciphers DHE_RSA_WITH_AES_128_CBC_SHA256\n
+    \ ciphers DHE_DSS_WITH_AES_128_CBC_SHA256\n  ciphers DHE_RSA_WITH_AES_128_CBC_SHA\n
+    \ ciphers DHE_DSS_WITH_AES_128_CBC_SHA\n  ciphers RSA_WITH_AES_128_GCM_SHA256\n
+    \ ciphers RSA_WITH_AES_128_CBC_SHA256\n  ciphers RSA_WITH_AES_128_CBC_SHA\n  ciphers
+    ECDHE_RSA_WITH_3DES_EDE_CBC_SHA\n  ciphers DHE_RSA_WITH_3DES_EDE_CBC_SHA\n  ciphers
+    DHE_DSS_WITH_3DES_EDE_CBC_SHA\n  ciphers RSA_WITH_3DES_EDE_CBC_SHA\n  no validate-server-cert
+    \n  caching \n  cache-timeout 300\n  cache-size 100\n  ssl-client-features \"use-sni\"
+    \n  curves secp521r1\n  curves secp384r1\n  curves secp256k1\n  curves secp256r1\n
+    \ use-custom-sni-hostname no\n  no validate-hostname \n  no hostname-validation-fail
+    \n  enable-tls13-compat \nexit\n\n%endif%\n\nexit\n\ncrypto\n  \n%if% available
+    \"ssl-server\"\n\nssl-server \"BookingServiceSSLServerProfile\"\n  protocols \"TLSv1d1+TLSv1d2+TLSv1d3\"
+    \n  ciphers AES_256_GCM_SHA384\n  ciphers CHACHA20_POLY1305_SHA256\n  ciphers
+    AES_128_GCM_SHA256\n  ciphers ECDHE_ECDSA_WITH_AES_256_GCM_SHA384\n  ciphers ECDHE_RSA_WITH_AES_256_GCM_SHA384\n
+    \ ciphers ECDHE_ECDSA_WITH_AES_256_CBC_SHA384\n  ciphers ECDHE_RSA_WITH_AES_256_CBC_SHA384\n
+    \ ciphers ECDHE_ECDSA_WITH_AES_256_CBC_SHA\n  ciphers ECDHE_RSA_WITH_AES_256_CBC_SHA\n
+    \ ciphers DHE_DSS_WITH_AES_256_GCM_SHA384\n  ciphers DHE_RSA_WITH_AES_256_GCM_SHA384\n
+    \ ciphers DHE_RSA_WITH_AES_256_CBC_SHA256\n  ciphers DHE_DSS_WITH_AES_256_CBC_SHA256\n
+    \ ciphers DHE_RSA_WITH_AES_256_CBC_SHA\n  ciphers DHE_DSS_WITH_AES_256_CBC_SHA\n
+    \ ciphers RSA_WITH_AES_256_GCM_SHA384\n  ciphers RSA_WITH_AES_256_CBC_SHA256\n
+    \ ciphers RSA_WITH_AES_256_CBC_SHA\n  ciphers ECDHE_ECDSA_WITH_AES_128_GCM_SHA256\n
+    \ ciphers ECDHE_RSA_WITH_AES_128_GCM_SHA256\n  ciphers ECDHE_ECDSA_WITH_AES_128_CBC_SHA256\n
+    \ ciphers ECDHE_RSA_WITH_AES_128_CBC_SHA256\n  ciphers ECDHE_ECDSA_WITH_AES_128_CBC_SHA\n
+    \ ciphers ECDHE_RSA_WITH_AES_128_CBC_SHA\n  ciphers DHE_DSS_WITH_AES_128_GCM_SHA256\n
+    \ ciphers DHE_RSA_WITH_AES_128_GCM_SHA256\n  ciphers DHE_RSA_WITH_AES_128_CBC_SHA256\n
+    \ ciphers DHE_DSS_WITH_AES_128_CBC_SHA256\n  ciphers DHE_RSA_WITH_AES_128_CBC_SHA\n
+    \ ciphers DHE_DSS_WITH_AES_128_CBC_SHA\n  ciphers RSA_WITH_AES_128_GCM_SHA256\n
+    \ ciphers RSA_WITH_AES_128_CBC_SHA256\n  ciphers RSA_WITH_AES_128_CBC_SHA\n  idcred
+    BookingCredentials\n  no request-client-auth \n  require-client-auth \n  validate-client-cert
+    \n  send-client-auth-ca-list \n  caching \n  cache-timeout 300\n  cache-size 20\n
+    \ ssl-options \"\" \n  max-duration 60\n  max-renegotiation-allowed 0\n  no prohibit-resume-on-reneg
+    \n  no compression \n  no allow-legacy-renegotiation \n  prefer-server-ciphers
+    \n  curves secp521r1\n  curves secp384r1\n  curves secp256k1\n  curves secp256r1\n
+    \ no prioritize-chacha \nexit\n\nexit\n\ncrypto\n  \nssl-server \"ssl-server\"\n
+    \ protocols \"TLSv1d0+TLSv1d1+TLSv1d2\" \n  ciphers ECDHE_RSA_WITH_AES_256_GCM_SHA384\n
+    \ ciphers ECDHE_RSA_WITH_AES_256_CBC_SHA384\n  ciphers ECDHE_RSA_WITH_AES_256_CBC_SHA\n
+    \ ciphers DHE_DSS_WITH_AES_256_GCM_SHA384\n  ciphers DHE_RSA_WITH_AES_256_GCM_SHA384\n
+    \ ciphers DHE_RSA_WITH_AES_256_CBC_SHA256\n  ciphers DHE_DSS_WITH_AES_256_CBC_SHA256\n
+    \ ciphers DHE_RSA_WITH_AES_256_CBC_SHA\n  ciphers DHE_DSS_WITH_AES_256_CBC_SHA\n
+    \ ciphers RSA_WITH_AES_256_GCM_SHA384\n  ciphers RSA_WITH_AES_256_CBC_SHA256\n
+    \ ciphers RSA_WITH_AES_256_CBC_SHA\n  ciphers ECDHE_RSA_WITH_AES_128_GCM_SHA256\n
+    \ ciphers ECDHE_RSA_WITH_AES_128_CBC_SHA256\n  ciphers ECDHE_RSA_WITH_AES_128_CBC_SHA\n
+    \ ciphers DHE_DSS_WITH_AES_128_GCM_SHA256\n  ciphers DHE_RSA_WITH_AES_128_GCM_SHA256\n
+    \ ciphers DHE_RSA_WITH_AES_128_CBC_SHA256\n  ciphers DHE_DSS_WITH_AES_128_CBC_SHA256\n
+    \ ciphers DHE_RSA_WITH_AES_128_CBC_SHA\n  ciphers DHE_DSS_WITH_AES_128_CBC_SHA\n
+    \ ciphers RSA_WITH_AES_128_GCM_SHA256\n  ciphers RSA_WITH_AES_128_CBC_SHA256\n
+    \ ciphers RSA_WITH_AES_128_CBC_SHA\n  ciphers ECDHE_RSA_WITH_3DES_EDE_CBC_SHA\n
+    \ ciphers DHE_RSA_WITH_3DES_EDE_CBC_SHA\n  ciphers DHE_DSS_WITH_3DES_EDE_CBC_SHA\n
+    \ ciphers RSA_WITH_3DES_EDE_CBC_SHA\n  idcred AlicePair\n  no request-client-auth
+    \n  require-client-auth \n  validate-client-cert \n  send-client-auth-ca-list
+    \n  caching \n  cache-timeout 300\n  cache-size 20\n  ssl-options \"\" \n  max-duration
+    60\n  max-renegotiation-allowed 0\n  no prohibit-resume-on-reneg \n  no compression
+    \n  no allow-legacy-renegotiation \n  prefer-server-ciphers \n  curves secp521r1\n
+    \ curves secp384r1\n  curves secp256k1\n  curves secp256r1\n  no prioritize-chacha
+    \nexit\n\n%endif%\n\nexit\nlogging event default-log \"all\" \"error\"\nlogging
+    event default-log \"mgmt\" \"notice\"\n\nacl \"rest-mgmt\"\nexit\n\nacl \"ssh\"\nexit\n\nacl
+    \"web-b2b-viewer\"\nexit\n\nacl \"web-mgmt\"\nexit\n\nacl \"xml-mgmt\"\nexit\n\n%if%
+    available \"json-settings\"\n\njson-settings \"jsonSettings\"\n  max-nesting-depth
+    64\n  max-label-string-length 256\n  max-value-string-length 8192\n  max-number-length
+    128\n  max-document-size 4194304\nexit\n\n%endif%\n\nuser-agent \"default\"\n
+    \ summary \"Default User Agent\"\n  max-redirects 8\n  timeout 300\nexit\n\nuser-agent
+    \"uaAirportService\"\n  max-redirects 8\n  timeout 300\nexit\n\n%if% available
+    \"document-crypto-map\"\n\ndocument-crypto-map \"BookingService_CryptoMap\"\n
+    \ operation encrypt-wssec\n  select \"//*[local-name()='PaymentCardDetails']\"\nexit\n\n%endif%\n\n%if%
+    available \"urlmap\"\n\nurlmap \"default-attempt-stream-all\"\n  match \"*\"\nexit\n\n%endif%\n\n%if%
+    available \"compile-options\"\n\ncompile-options \"default-attempt-stream\"\n
+    \ xslt-version XSLT10\n  no strict \n  try-stream default-attempt-stream-all\n
+    \ stack-size 524288\n  wsi-validate ignore\n  wsdl-validate-body strict\n  wsdl-validate-headers
+    lax\n  wsdl-validate-faults strict\n  no wsdl-wrapped-faults \n  no wsdl-strict-soap-version
+    \n  no xacml-debug \nexit\n\n%endif%\n\n%if% available \"parse-settings\"\n\nparse-settings
+    \"default\"\n  document-type detect\n  document-size 4194304\n  nesting-depth
+    512\n  width 4096\n  name-length 256\n  value-length 8192\n  unique-prefixes 1024\n
+    \ unique-namespaces 1024\n  unique-names 1024\n  number-length 128\nexit\n\n%endif%\n\n%if%
+    available \"api-routing\"\n\napi-routing \"default-api-route\"\nexit\n\n%endif%\n\n%if%
+    available \"api-rate-limit\"\n\napi-rate-limit \"default-api-ratelimit\"\nexit\n\n%endif%\n\n%if%
+    available \"api-security\"\n\napi-security \"default-api-security\"\n  title \"default-security\"\n
+    \ correlation-path \"$.assembly.execute[4]\"\nexit\n\n%endif%\n\n%if% available
+    \"api-execute\"\n\napi-execute \"default-api-execute\"\nexit\n\n%endif%\n\n%if%
+    available \"api-result\"\n\napi-result \"default-api-result\"\n  output \"OUTPUT\"\nexit\n\n%endif%\n\n%if%
+    available \"assembly-html-page\"\n\nassembly-html-page \"default-html-page\"\n
+    \ title \"default-html-page\"\n  correlation-path \"$.assembly.execute[1]\"\n
+    \ output \"message\"\nexit\n\n%endif%\n\n%if% available \"assembly-rate-limit\"\n\nassembly-rate-limit
+    \"default-api-ratelimit\"\n  title \"default-ratelimit\"\n  correlation-path \"$.assembly.execute[3]\"\n
+    \ source plan-default\nexit\n\n%endif%\n\n%if% available \"assembly-function\"\n\nassembly-function
+    \"default-func-global\"\n  assembly default-assembly-global\nexit\n\nassembly-function
+    \"default-func-main\"\n  assembly default-assembly-main\nexit\n\nassembly-function
+    \"default-func-preflow\"\n  assembly default-preflow\nexit\n\n%endif%\n\n%if%
+    available \"assembly-function-call\"\n\nassembly-function-call \"default-func-call-global\"\n
+    \ function default-func-global\nexit\n\nassembly-function-call \"default-func-call-main\"\n
+    \ function default-func-main\nexit\n\nassembly-function-call \"default-func-call-preflow\"\n
+    \ function default-func-preflow\nexit\n\n%endif%\n\naction \"BaggageStatusPolicy_RequestRule_0_setvar_0\"\n
+    \ reset\n  type setvar\n  input \"INPUT\"\n  parse-settings-result-type none\n
+    \ transform-language none\n  no charset-transparency \n  named-inouts default\n
+    \ variable \"var://service/mpgw/skip-backside\"\n  value \"1\"\n  ssl-client-type
+    proxy\n  no transactional \n  soap-validation body\n  sql-source-type static\n
+    \ strip-signature \n  no asynchronous \n  results-mode first-available\n  retry-count
+    0\n  retry-interval 1000\n  no multiple-outputs \n  iterator-type XPATH\n  timeout
+    0\n  http-method GET\n  http-method-limited POST\n  http-method-limited2 POST\nexit\n\naction
+    \"BaggageStatusPolicy_RequestRule_0_xform_0\"\n  reset\n  type xform\n  input
+    \"INPUT\"\n  transform \"local:///GenerateBaggageStatusSOAPResponse.xsl\"\n  parse-settings-result-type
+    none\n  transform-language none\n  output \"OUTPUT\"\n  no charset-transparency
+    \n  named-inouts default\n  ssl-client-type proxy\n  output-type default\n  no
+    transactional \n  soap-validation body\n  sql-source-type static\n  strip-signature
+    \n  no asynchronous \n  results-mode first-available\n  retry-count 0\n  retry-interval
+    1000\n  no multiple-outputs \n  iterator-type XPATH\n  timeout 0\n  http-method
+    GET\n  http-method-limited POST\n  http-method-limited2 POST\nexit\n\naction \"BookingServiceBackendPolicy_rule_0_results_0\"\n
+    \ reset\n  type results\n  input \"OutTransform\"\n  parse-settings-result-type
+    none\n  transform-language none\n  no charset-transparency \n  named-inouts default\n
+    \ ssl-client-type proxy\n  output-type default\n  no transactional \n  soap-validation
+    body\n  sql-source-type static\n  strip-signature \n  no asynchronous \n  results-mode
+    first-available\n  retry-count 0\n  retry-interval 1000\n  no multiple-outputs
+    \n  iterator-type XPATH\n  timeout 0\n  http-method GET\n  http-method-limited
+    POST\n  http-method-limited2 POST\nexit\n\naction \"BookingServiceBackendPolicy_rule_0_setvar_0\"\n
+    \ reset\n  type setvar\n  input \"dpvar_12\"\n  parse-settings-result-type none\n
+    \ transform-language none\n  no charset-transparency \n  named-inouts default\n
+    \ variable \"var://service/mpgw/skip-backside\"\n  value \"1\"\n  ssl-client-type
+    proxy\n  no transactional \n  soap-validation body\n  sql-source-type static\n
+    \ strip-signature \n  no asynchronous \n  results-mode first-available\n  retry-count
+    0\n  retry-interval 1000\n  no multiple-outputs \n  iterator-type XPATH\n  timeout
+    0\n  http-method GET\n  http-method-limited POST\n  http-method-limited2 POST\nexit\n\naction
+    \"BookingServiceBackendPolicy_rule_0_xform_0\"\n  reset\n  type xform\n  input
+    \"dpvar_12\"\n  transform \"local:///BookingServiceBackend/BookingServiceBackend_Transform.xsl\"\n
+    \ parse-settings-result-type none\n  transform-language none\n  output \"OutTransform\"\n
+    \ no charset-transparency \n  named-inouts default\n  ssl-client-type proxy\n
+    \ output-type default\n  no transactional \n  soap-validation body\n  sql-source-type
+    static\n  strip-signature \n  no asynchronous \n  results-mode first-available\n
+    \ retry-count 0\n  retry-interval 1000\n  no multiple-outputs \n  iterator-type
+    XPATH\n  timeout 0\n  http-method GET\n  http-method-limited POST\n  http-method-limited2
+    POST\nexit\n\naction \"BookingServiceBackendPolicy_rule_0_xform_16\"\n  reset\n
+    \ type xform\n  input \"INPUT\"\n  transform \"store:///strip-wssec-signature.xsl\"\n
+    \ parse-settings-result-type none\n  transform-language none\n  output \"dpvar_12\"\n
+    \ no charset-transparency \n  named-inouts default\n  ssl-client-type proxy\n
+    \ output-type default\n  no transactional \n  soap-validation body\n  sql-source-type
+    static\n  strip-signature \n  no asynchronous \n  results-mode first-available\n
+    \ retry-count 0\n  retry-interval 1000\n  no multiple-outputs \n  iterator-type
+    XPATH\n  timeout 0\n  http-method GET\n  http-method-limited POST\n  http-method-limited2
+    POST\nexit\n\naction \"BookingServiceBackendPolicy_rule_1_decrypt_0\"\n  reset\n
+    \ type xform\n  input \"INPUT\"\n  transform \"store:///decrypt.xsl\"\n  parse-settings-result-type
+    none\n  transform-language none\n  output \"dpvar_10\"\n  no charset-transparency
+    \n  named-inouts default\n  ssl-client-type proxy\n  parameter \"{http://www.datapower.com/param/config}decryptkey\"
+    \"BookingApplication\"\n  output-type default\n  no transactional \n  soap-validation
+    body\n  sql-source-type static\n  strip-signature \n  no asynchronous \n  results-mode
+    first-available\n  retry-count 0\n  retry-interval 1000\n  no multiple-outputs
+    \n  iterator-type XPATH\n  timeout 0\n  http-method GET\n  http-method-limited
+    POST\n  http-method-limited2 POST\nexit\n\naction \"BookingServiceBackendPolicy_rule_1_encrypt_0\"\n
+    \ reset\n  type xform\n  input \"PIPE\"\n  parse-settings-result-type none\n  transform-language
+    none\n  output \"PIPE\"\n  no charset-transparency \n  named-inouts default\n
+    \ dynamic-stylesheet BookingService_CryptoMap\n  ssl-client-type proxy\n  parameter
+    \"{http://www.datapower.com/param/config}recipient\" \"BookingService_sscert\"\n
+    \ output-type default\n  no transactional \n  soap-validation body\n  sql-source-type
+    static\n  strip-signature \n  no asynchronous \n  results-mode first-available\n
+    \ retry-count 0\n  retry-interval 1000\n  no multiple-outputs \n  iterator-type
+    XPATH\n  timeout 0\n  http-method GET\n  http-method-limited POST\n  http-method-limited2
+    POST\nexit\n\naction \"BookingServiceBackendPolicy_rule_1_results_1\"\n  reset\n
+    \ type results\n  input \"PIPE\"\n  parse-settings-result-type none\n  transform-language
+    none\n  no charset-transparency \n  named-inouts default\n  ssl-client-type proxy\n
+    \ output-type default\n  no transactional \n  soap-validation body\n  sql-source-type
+    static\n  strip-signature \n  no asynchronous \n  results-mode first-available\n
+    \ retry-count 0\n  retry-interval 1000\n  no multiple-outputs \n  iterator-type
+    XPATH\n  timeout 0\n  http-method GET\n  http-method-limited POST\n  http-method-limited2
+    POST\nexit\n\naction \"BookingServiceBackendPolicy_rule_1_setvar_0\"\n  reset\n
+    \ type setvar\n  input \"dpvar_11\"\n  parse-settings-result-type none\n  transform-language
+    none\n  no charset-transparency \n  named-inouts default\n  variable \"var://service/mpgw/skip-backside\"\n
+    \ value \"1\"\n  ssl-client-type proxy\n  no transactional \n  soap-validation
+    body\n  sql-source-type static\n  strip-signature \n  no asynchronous \n  results-mode
+    first-available\n  retry-count 0\n  retry-interval 1000\n  no multiple-outputs
+    \n  iterator-type XPATH\n  timeout 0\n  http-method GET\n  http-method-limited
+    POST\n  http-method-limited2 POST\nexit\n\naction \"BookingServiceBackendPolicy_rule_1_sign_0\"\n
+    \ reset\n  type xform\n  input \"PIPE\"\n  transform \"store:///sign-wssec.xsl\"\n
+    \ parse-settings-result-type none\n  transform-language none\n  output \"PIPE\"\n
+    \ no charset-transparency \n  named-inouts default\n  ssl-client-type proxy\n
+    \ parameter \"{http://www.datapower.com/param/config}keypair-cert\" \"BookingApplication\"\n
+    \ parameter \"{http://www.datapower.com/param/config}keypair-key\" \"BookingApplication\"\n
+    \ output-type default\n  no transactional \n  soap-validation body\n  sql-source-type
+    static\n  strip-signature \n  no asynchronous \n  results-mode first-available\n
+    \ retry-count 0\n  retry-interval 1000\n  no multiple-outputs \n  iterator-type
+    XPATH\n  timeout 0\n  http-method GET\n  http-method-limited POST\n  http-method-limited2
+    POST\nexit\n\naction \"BookingServiceBackendPolicy_rule_1_verify_0\"\n  reset\n
+    \ type filter\n  input \"dpvar_10\"\n  transform \"store:///verify.xsl\"\n  parse-settings-result-type
+    none\n  transform-language none\n  no charset-transparency \n  named-inouts default\n
+    \ ssl-client-type proxy\n  parameter \"{http://www.datapower.com/param/config}valcred\"
+    \"BookingSvc_ValCred\"\n  no transactional \n  soap-validation body\n  sql-source-type
+    static\n  strip-signature \n  no asynchronous \n  results-mode first-available\n
+    \ retry-count 0\n  retry-interval 1000\n  no multiple-outputs \n  iterator-type
+    XPATH\n  timeout 0\n  http-method GET\n  http-method-limited POST\n  http-method-limited2
+    POST\nexit\n\naction \"BookingServiceBackendPolicy_rule_1_xform_3\"\n  reset\n
+    \ type xform\n  input \"dpvar_11\"\n  transform \"local:///BookingServiceBackend/BookingServiceBackend_Transform.xsl\"\n
+    \ parse-settings-result-type none\n  transform-language none\n  output \"PIPE\"\n
+    \ no charset-transparency \n  named-inouts default\n  ssl-client-type proxy\n
+    \ output-type default\n  no transactional \n  soap-validation body\n  sql-source-type
+    static\n  strip-signature \n  no asynchronous \n  results-mode first-available\n
+    \ retry-count 0\n  retry-interval 1000\n  no multiple-outputs \n  iterator-type
+    XPATH\n  timeout 0\n  http-method GET\n  http-method-limited POST\n  http-method-limited2
+    POST\nexit\n\naction \"BookingServiceBackendPolicy_rule_1_xform_7\"\n  reset\n
+    \ type xform\n  input \"dpvar_10\"\n  transform \"store:///strip-wssec-signature.xsl\"\n
+    \ parse-settings-result-type none\n  transform-language none\n  output \"dpvar_11\"\n
+    \ no charset-transparency \n  named-inouts default\n  ssl-client-type proxy\n
+    \ output-type default\n  no transactional \n  soap-validation body\n  sql-source-type
+    static\n  strip-signature \n  no asynchronous \n  results-mode first-available\n
+    \ retry-count 0\n  retry-interval 1000\n  no multiple-outputs \n  iterator-type
+    XPATH\n  timeout 0\n  http-method GET\n  http-method-limited POST\n  http-method-limited2
+    POST\nexit\n\naction \"BookingservicePolicy_rule_0_filter_0\"\n  reset\n  type
+    filter\n  input \"INPUT\"\n  transform \"local:///ReservationCodeFilter.xsl\"\n
+    \ parse-settings-result-type none\n  transform-language none\n  no charset-transparency
+    \n  named-inouts default\n  ssl-client-type proxy\n  no transactional \n  soap-validation
+    body\n  sql-source-type static\n  strip-signature \n  no asynchronous \n  results-mode
+    first-available\n  retry-count 0\n  retry-interval 1000\n  no multiple-outputs
+    \n  iterator-type XPATH\n  timeout 0\n  http-method GET\n  http-method-limited
+    POST\n  http-method-limited2 POST\nexit\n\naction \"BookingservicePolicy_rule_0_filter_1\"\n
+    \ reset\n  type filter\n  input \"INPUT\"\n  transform \"store:///SQL-Injection-Filter.xsl\"\n
+    \ parse-settings-result-type none\n  transform-language none\n  no charset-transparency
+    \n  named-inouts default\n  ssl-client-type proxy\n  no transactional \n  soap-validation
+    body\n  sql-source-type static\n  strip-signature \n  no asynchronous \n  results-mode
+    first-available\n  retry-count 0\n  retry-interval 1000\n  no multiple-outputs
+    \n  iterator-type XPATH\n  timeout 0\n  http-method GET\n  http-method-limited
+    POST\n  http-method-limited2 POST\nexit\n\naction \"BookingservicePolicy_rule_0_results_0\"\n
+    \ reset\n  type results\n  input \"INPUT\"\n  parse-settings-result-type none\n
+    \ transform-language none\n  no charset-transparency \n  named-inouts default\n
+    \ ssl-client-type proxy\n  output-type default\n  no transactional \n  soap-validation
+    body\n  sql-source-type static\n  strip-signature \n  no asynchronous \n  results-mode
+    first-available\n  retry-count 0\n  retry-interval 1000\n  no multiple-outputs
+    \n  iterator-type XPATH\n  timeout 0\n  http-method GET\n  http-method-limited
+    POST\n  http-method-limited2 POST\nexit\n\naction \"BookingservicePolicy_rule_0_validate_0\"\n
+    \ reset\n  type validate\n  input \"INPUT\"\n  parse-settings-result-type none\n
+    \ transform-language none\n  no charset-transparency \n  named-inouts default\n
+    \ wsdl-url \"local:///bookingservice.wsdl\"\n  ssl-client-type proxy\n  no transactional
+    \n  soap-validation body\n  sql-source-type static\n  strip-signature \n  no asynchronous
+    \n  results-mode first-available\n  retry-count 0\n  retry-interval 1000\n  no
+    multiple-outputs \n  iterator-type XPATH\n  timeout 0\n  http-method GET\n  http-method-limited
+    POST\n  http-method-limited2 POST\nexit\n\naction \"BookingservicePolicy_rule_1_results_1\"\n
+    \ reset\n  type results\n  input \"PIPE\"\n  parse-settings-result-type none\n
+    \ transform-language none\n  no charset-transparency \n  named-inouts default\n
+    \ ssl-client-type proxy\n  output-type default\n  no transactional \n  soap-validation
+    body\n  sql-source-type static\n  strip-signature \n  no asynchronous \n  results-mode
+    first-available\n  retry-count 0\n  retry-interval 1000\n  no multiple-outputs
+    \n  iterator-type XPATH\n  timeout 0\n  http-method GET\n  http-method-limited
+    POST\n  http-method-limited2 POST\nexit\n\naction \"BookingservicePolicy_rule_1_xform_0\"\n
+    \ reset\n  type xform\n  input \"INPUT\"\n  transform \"local:///BookingServiceBackend/BookingResponse_Transform.xsl\"\n
+    \ parse-settings-result-type none\n  transform-language none\n  output \"PIPE\"\n
+    \ no charset-transparency \n  named-inouts default\n  ssl-client-type proxy\n
+    \ output-type default\n  no transactional \n  soap-validation body\n  sql-source-type
+    static\n  strip-signature \n  no asynchronous \n  results-mode first-available\n
+    \ retry-count 0\n  retry-interval 1000\n  no multiple-outputs \n  iterator-type
+    XPATH\n  timeout 0\n  http-method GET\n  http-method-limited POST\n  http-method-limited2
+    POST\nexit\n\naction \"fake-backend_request_results\"\n  reset\n  type results\n
+    \ input \"INPUT\"\n  parse-settings-result-type none\n  transform-language none\n
+    \ no charset-transparency \n  named-inouts default\n  ssl-client-type proxy\n
+    \ no transactional \n  soap-validation body\n  sql-source-type static\n  strip-signature
+    \n  no asynchronous \n  results-mode first-available\n  retry-count 0\n  retry-interval
+    1000\n  no multiple-outputs \n  iterator-type XPATH\n  timeout 0\n  http-method
+    GET\n  http-method-limited POST\n  http-method-limited2 POST\nexit\n\naction \"polAirportService_rule_0_gatewayscript_1\"\n
+    \ reset\n  type gatewayscript\n  input \"PIPE\"\n  parse-settings-result-type
+    none\n  transform-language none\n  gatewayscript-location \"local:///airportDetail.js\"\n
+    \ output \"PIPE\"\n  no charset-transparency \n  named-inouts default\n  ssl-client-type
+    proxy\n  no transactional \n  soap-validation body\n  sql-source-type static\n
+    \ strip-signature \n  no asynchronous \n  results-mode first-available\n  retry-count
+    0\n  retry-interval 1000\n  no multiple-outputs \n  iterator-type XPATH\n  timeout
+    0\n  http-method GET\n  http-method-limited POST\n  http-method-limited2 POST\nexit\n\naction
+    \"polAirportService_rule_0_gatewayscript_2\"\n  reset\n  type gatewayscript\n
+    \ input \"INPUT\"\n  parse-settings-result-type none\n  transform-language none\n
+    \ gatewayscript-location \"local:///readLocalFile.js\"\n  output \"PIPE\"\n  no
+    charset-transparency \n  named-inouts default\n  ssl-client-type proxy\n  parameter
+    \"parmDataFileName\" \"local:///airports.json\"\n  no transactional \n  soap-validation
+    body\n  sql-source-type static\n  strip-signature \n  no asynchronous \n  results-mode
+    first-available\n  retry-count 0\n  retry-interval 1000\n  no multiple-outputs
+    \n  iterator-type XPATH\n  timeout 0\n  http-method GET\n  http-method-limited
+    POST\n  http-method-limited2 POST\nexit\n\naction \"polAirportService_rule_0_results_1\"\n
+    \ reset\n  type results\n  input \"PIPE\"\n  parse-settings-result-type none\n
+    \ transform-language none\n  no charset-transparency \n  named-inouts default\n
+    \ ssl-client-type proxy\n  output-type default\n  no transactional \n  soap-validation
+    body\n  sql-source-type static\n  strip-signature \n  no asynchronous \n  results-mode
+    first-available\n  retry-count 0\n  retry-interval 1000\n  no multiple-outputs
+    \n  iterator-type XPATH\n  timeout 0\n  http-method GET\n  http-method-limited
+    POST\n  http-method-limited2 POST\nexit\n\naction \"polAirportService_rule_0_setvar_0\"\n
+    \ reset\n  type setvar\n  input \"INPUT\"\n  parse-settings-result-type none\n
+    \ transform-language none\n  no charset-transparency \n  named-inouts default\n
+    \ variable \"var://service/mpgw/skip-backside\"\n  value \"true\"\n  ssl-client-type
+    proxy\n  no transactional \n  soap-validation body\n  sql-source-type static\n
+    \ strip-signature \n  no asynchronous \n  results-mode first-available\n  retry-count
+    0\n  retry-interval 1000\n  no multiple-outputs \n  iterator-type XPATH\n  timeout
+    0\n  http-method GET\n  http-method-limited POST\n  http-method-limited2 POST\nexit\n\naction
+    \"polAirportService_rule_favicon_results_0\"\n  reset\n  type results\n  input
+    \"NULL\"\n  parse-settings-result-type none\n  transform-language none\n  no charset-transparency
+    \n  named-inouts default\n  ssl-client-type proxy\n  output-type default\n  no
+    transactional \n  soap-validation body\n  sql-source-type static\n  strip-signature
+    \n  no asynchronous \n  results-mode first-available\n  retry-count 0\n  retry-interval
+    1000\n  no multiple-outputs \n  iterator-type XPATH\n  timeout 0\n  http-method
+    GET\n  http-method-limited POST\n  http-method-limited2 POST\nexit\n\naction \"polAirportService_rule_favicon_setvar_0\"\n
+    \ reset\n  type setvar\n  input \"INPUT\"\n  parse-settings-result-type none\n
+    \ transform-language none\n  no charset-transparency \n  named-inouts default\n
+    \ variable \"var://service/mpgw/skip-backside\"\n  value \"true\"\n  ssl-client-type
+    proxy\n  no transactional \n  soap-validation body\n  sql-source-type static\n
+    \ strip-signature \n  no asynchronous \n  results-mode first-available\n  retry-count
+    0\n  retry-interval 1000\n  no multiple-outputs \n  iterator-type XPATH\n  timeout
+    0\n  http-method GET\n  http-method-limited POST\n  http-method-limited2 POST\nexit\n\nrule
+    \"BaggageStatusPolicy_RequestRule_0\"\n  reset\n    action \"BaggageStatusPolicy_RequestRule_0_setvar_0\"\n
+    \   action \"BaggageStatusPolicy_RequestRule_0_xform_0\"\n  type request-rule\n
+    \ input-filter none\n  output-filter none\n  no non-xml-processing \n  no unprocessed
+    \nexit\n\nrule \"BookingServiceBackendPolicy_rule_0\"\n  reset\n    action \"BookingServiceBackendPolicy_rule_0_xform_16\"\n
+    \   action \"BookingServiceBackendPolicy_rule_0_setvar_0\"\n    action \"BookingServiceBackendPolicy_rule_0_xform_0\"\n
+    \   action \"BookingServiceBackendPolicy_rule_0_results_0\"\n  type request-rule\n
+    \ input-filter none\n  output-filter none\n  no non-xml-processing \n  no unprocessed
+    \nexit\n\nrule \"BookingServiceBackendPolicy_rule_1\"\n  reset\n    action \"BookingServiceBackendPolicy_rule_1_decrypt_0\"\n
+    \   action \"BookingServiceBackendPolicy_rule_1_verify_0\"\n    action \"BookingServiceBackendPolicy_rule_1_xform_7\"\n
+    \   action \"BookingServiceBackendPolicy_rule_1_setvar_0\"\n    action \"BookingServiceBackendPolicy_rule_1_xform_3\"\n
+    \   action \"BookingServiceBackendPolicy_rule_1_sign_0\"\n    action \"BookingServiceBackendPolicy_rule_1_encrypt_0\"\n
+    \   action \"BookingServiceBackendPolicy_rule_1_results_1\"\n  type request-rule\n
+    \ input-filter none\n  output-filter none\n  no non-xml-processing \n  no unprocessed
+    \nexit\n\nrule \"BookingservicePolicy_rule_0\"\n  reset\n    action \"BookingservicePolicy_rule_0_validate_0\"\n
+    \   action \"BookingservicePolicy_rule_0_filter_0\"\n    action \"BookingservicePolicy_rule_0_filter_1\"\n
+    \   action \"BookingservicePolicy_rule_0_results_0\"\n  type request-rule\n  input-filter
+    none\n  output-filter none\n  no non-xml-processing \n  no unprocessed \nexit\n\nrule
+    \"BookingservicePolicy_rule_1\"\n  reset\n    action \"BookingservicePolicy_rule_1_xform_0\"\n
+    \   action \"BookingservicePolicy_rule_1_results_1\"\n  type response-rule\n  input-filter
+    none\n  output-filter none\n  no non-xml-processing \n  no unprocessed \nexit\n\nrule
+    \"fake-backend_request\"\n  reset\n    action \"fake-backend_request_results\"\n
+    \ type request-rule\n  input-filter none\n  output-filter none\n  no non-xml-processing
+    \n  no unprocessed \nexit\n\nrule \"polAirportService_rule_0\"\n  reset\n    action
+    \"polAirportService_rule_0_setvar_0\"\n    action \"polAirportService_rule_0_gatewayscript_2\"\n
+    \   action \"polAirportService_rule_0_gatewayscript_1\"\n    action \"polAirportService_rule_0_results_1\"\n
+    \ type request-rule\n  input-filter none\n  output-filter none\n  non-xml-processing
+    \n  no unprocessed \nexit\n\nrule \"polAirportService_rule_favicon\"\n  reset\n
+    \   action \"polAirportService_rule_favicon_setvar_0\"\n    action \"polAirportService_rule_favicon_results_0\"\n
+    \ type request-rule\n  input-filter none\n  output-filter none\n  non-xml-processing
+    \n  no unprocessed \nexit\n\n%if% available \"api-rule\"\n\napi-rule \"default-api-error-rule\"\n
+    \ no dynamic-actions-mode \n  action default-api-result\nexit\n\napi-rule \"default-api-rule\"\n
+    \ no dynamic-actions-mode \n  action default-api-route\n  action default-api-execute\n
+    \ action default-api-result\nexit\n\napi-rule \"default-assembly-func-rule\"\n
+    \ no dynamic-actions-mode \n  action default-func-call-global\n  action default-api-result\nexit\n\napi-rule
+    \"default-assembly-rule-global\"\n  no dynamic-actions-mode \n  action default-api-route\n
+    \ action default-func-call-preflow\n  action default-func-call-main\nexit\n\napi-rule
+    \"default-assembly-rule-main\"\n  no dynamic-actions-mode \n  action default-api-execute\nexit\n\napi-rule
+    \"default-empty-rule\"\n  no dynamic-actions-mode \nexit\n\napi-rule \"default-preflow-rule\"\n
+    \ no dynamic-actions-mode \n  action default-api-cors\n  action default-html-page\n
+    \ action default-api-client-identification\n  action default-api-ratelimit\n  action
+    default-api-security\nexit\n\n%endif%\n\n%if% available \"assembly\"\n\nassembly
+    \"default-assembly-global\"\n  rule default-assembly-rule-global\nexit\n\nassembly
+    \"default-assembly-main\"\n  rule default-assembly-rule-main\nexit\n\nassembly
+    \"default-empty-assembly\"\n  rule default-empty-rule\nexit\n\nassembly \"default-preflow\"\n
+    \ rule default-preflow-rule\nexit\n\n%endif%\n\nmatching \"airportDetail\"\n  urlmatch
+    \"/airport/detail*\"\n  no match-with-pcre \n  no combine-with-or \nexit\n\nmatching
+    \"all\"\n  urlmatch \"*\"\n  no match-with-pcre \n  no combine-with-or \nexit\n\nmatching
+    \"fake-backend\"\n  urlmatch \"*\"\n  no match-with-pcre \n  no combine-with-or
+    \nexit\n\nmatching \"favicon\"\n  urlmatch \".*/favicon.ico\"\n  match-with-pcre
+    \n  no combine-with-or \nexit\n\nmatching \"MatchAnyURL\"\n  urlmatch \"*\"\n
+    \ no match-with-pcre \n  no combine-with-or \nexit\n\nmatching \"V2\"\n  urlmatch
+    \"*/V2\"\n  no match-with-pcre \n  no combine-with-or \nexit\n\nstylepolicy \"BaggageStatusPolicy\"\n
+    \ reset\n  filter \"store:///filter-reject-all.xsl\"\n  xsldefault \"store:///identity.xsl\"\n
+    \ xquerydefault \"store:///reject-all-json.xq\"\n  match \"MatchAnyURL\" \"BaggageStatusPolicy_RequestRule_0\"\nexit\n\nstylepolicy
+    \"BookingServiceBackendPolicy\"\n  reset\n  filter \"store:///filter-reject-all.xsl\"\n
+    \ xsldefault \"store:///identity.xsl\"\n  xquerydefault \"store:///reject-all-json.xq\"\n
+    \ match \"V2\" \"BookingServiceBackendPolicy_rule_1\"\n  match \"all\" \"BookingServiceBackendPolicy_rule_0\"\nexit\n\nstylepolicy
+    \"BookingservicePolicy\"\n  reset\n  filter \"store:///filter-reject-all.xsl\"\n
+    \ xsldefault \"store:///identity.xsl\"\n  xquerydefault \"store:///reject-all-json.xq\"\n
+    \ match \"all\" \"BookingservicePolicy_rule_0\"\n  match \"all\" \"BookingservicePolicy_rule_1\"\nexit\n\nstylepolicy
+    \"default\"\n  reset\n  summary \"Default Processing Policy\"\n  filter \"store:///filter-reject-all.xsl\"\n
+    \ xsldefault \"store:///identity.xsl\"\n  xquerydefault \"store:///reject-all-json.xq\"\nexit\n\nstylepolicy
+    \"fake-backend\"\n  reset\n  filter \"store:///filter-reject-all.xsl\"\n  xsldefault
+    \"store:///identity.xsl\"\n  xquerydefault \"store:///reject-all-json.xq\"\n  match
+    \"fake-backend\" \"fake-backend_request\"\nexit\n\nstylepolicy \"polAirportService\"\n
+    \ reset\n  filter \"store:///filter-reject-all.xsl\"\n  xsldefault \"store:///identity.xsl\"\n
+    \ xquerydefault \"store:///reject-all-json.xq\"\n  match \"favicon\" \"polAirportService_rule_favicon\"\n
+    \ match \"airportDetail\" \"polAirportService_rule_0\"\nexit\n\n%if% available
+    \"metadata\"\n\nmetadata \"ftp-usercert-metadata\"\n  meta-item \"variable\" \"dn\"
+    \"var://context/INPUT/ftp/tls/client-subject-dn\"\n  meta-item \"variable\" \"issuer\"
+    \"var://context/INPUT/ftp/tls/client-issuer-dn\"\n  meta-item \"variable\" \"serial\"
+    \"var://context/INPUT/ftp/tls/client-serial-number\"\nexit\n\nmetadata \"ftp-username-metadata\"\n
+    \ meta-item \"variable\" \"dn\" \"var://context/INPUT/ftp/tls/client-subject-dn\"\n
+    \ meta-item \"variable\" \"issuer\" \"var://context/INPUT/ftp/tls/client-issuer-dn\"\n
+    \ meta-item \"variable\" \"password\" \"var://context/INPUT/ftp/password\"\n  meta-item
+    \"variable\" \"serial\" \"var://context/INPUT/ftp/tls/client-serial-number\"\n
+    \ meta-item \"variable\" \"username\" \"var://context/INPUT/ftp/username\"\nexit\n\nmetadata
+    \"oauth-scope-metadata\"\n  meta-item \"variable\" \"scope\" \"var://context/INPUT/oauth/verified-scope\"\nexit\n\nmetadata
+    \"ssh-password-metadata\"\n  meta-item \"variable\" \"password\" \"var://context/INPUT/ssh/password\"\n
+    \ meta-item \"variable\" \"publickey\" \"var://context/INPUT/ssh/publickey\"\n
+    \ meta-item \"variable\" \"username\" \"var://context/INPUT/ssh/username\"\nexit\n\n%endif%\n\nxmlmgr
+    \"BookingServiceBackend_XMLM\"\nxsl cache memorysize \"BookingServiceBackend_XMLM\"
+    \"2147483647\"\nxsl cache size \"BookingServiceBackend_XMLM\" \"256\"\nxsl checksummed
+    cache BookingServiceBackend_XMLM\nno tx-warn \"BookingServiceBackend_XMLM\"\nmemoization
+    \"BookingServiceBackend_XMLM\"\n\nxml parser limits \"BookingServiceBackend_XMLM\"\n
+    bytes-scanned 4194304\n element-depth 512\n attribute-count 128\n max-node-size
+    33554432\n forbid-external-references \n external-references forbid\n max-prefixes
+    0\n max-namespaces 0\n max-local-names 0\nexit\n\ndocumentcache \"BookingServiceBackend_XMLM\"\n
+    no policy\n maxdocs \"5000\"\n size \"0\"\n max-writes \"32768\"\nexit\nno xml
+    validate \"BookingServiceBackend_XMLM\" *\n\nxml-manager \"BookingServiceBackend_XMLM\"\n
+    \ user-agent \"default\"\nexit\n\nxmlmgr \"default\"\nxsl cache memorysize \"default\"
+    \"2147483647\"\nxsl cache size \"default\" \"256\"\nxsl checksummed cache default\nno
+    tx-warn \"default\"\nmemoization \"default\"\n\nxml parser limits \"default\"\n
+    bytes-scanned 4194304\n element-depth 512\n attribute-count 128\n max-node-size
+    33554432\n forbid-external-references \n external-references forbid\n max-prefixes
+    1024\n max-namespaces 1024\n max-local-names 60000\nexit\n\ndocumentcache \"default\"\n
+    no policy\n maxdocs \"5000\"\n size \"0\"\n max-writes \"32768\"\nexit\nno xml
+    validate \"default\" *\n\nxml-manager \"default\"\n  summary \"Default XML-Manager\"\n
+    \ user-agent \"default\"\nexit\n\nxmlmgr \"default-attempt-stream\"\nxslconfig
+    \"default-attempt-stream\" \"default-attempt-stream\"\nxsl cache memorysize \"default-attempt-stream\"
+    \"2147483647\"\nxsl cache size \"default-attempt-stream\" \"256\"\nxsl checksummed
+    cache default-attempt-stream\nno tx-warn \"default-attempt-stream\"\nmemoization
+    \"default-attempt-stream\"\n\nxml parser limits \"default-attempt-stream\"\n bytes-scanned
+    268435456\n element-depth 512\n attribute-count 128\n max-node-size 268435456\n
+    forbid-external-references \n external-references forbid\n max-prefixes 1024\n
+    max-namespaces 1024\n max-local-names 60000\nexit\n\ndocumentcache \"default-attempt-stream\"\n
+    no policy\n maxdocs \"5000\"\n size \"0\"\n max-writes \"32768\"\nexit\nno xml
+    validate \"default-attempt-stream\" *\n\nxml-manager \"default-attempt-stream\"\n
+    \ summary \"Default Streaming XML-Manager\"\n  user-agent \"default\"\nexit\n\nxmlmgr
+    \"default-wsrr\"\nxsl cache memorysize \"default-wsrr\" \"2147483647\"\nxsl cache
+    size \"default-wsrr\" \"256\"\nxsl checksummed cache default-wsrr\nno tx-warn
+    \"default-wsrr\"\nmemoization \"default-wsrr\"\n\nxml parser limits \"default-wsrr\"\n
+    bytes-scanned 4194304\n element-depth 512\n attribute-count 128\n max-node-size
+    33554432\n forbid-external-references \n external-references forbid\n max-prefixes
+    1024\n max-namespaces 1024\n max-local-names 60000\nexit\n\ndocumentcache \"default-wsrr\"\n
+    no policy\n maxdocs \"5000\"\n size \"0\"\n max-writes \"32768\"\nexit\nno xml
+    validate \"default-wsrr\" *\n\nxml-manager \"default-wsrr\"\n  summary \"WSRR
+    XML-Manager\"\n  user-agent \"default\"\nexit\n\nxmlmgr \"MockServiceXMLMgr\"\nxsl
+    cache memorysize \"MockServiceXMLMgr\" \"2147483647\"\nxsl cache size \"MockServiceXMLMgr\"
+    \"256\"\nxsl checksummed cache MockServiceXMLMgr\nno tx-warn \"MockServiceXMLMgr\"\nmemoization
+    \"MockServiceXMLMgr\"\n\nxml parser limits \"MockServiceXMLMgr\"\n bytes-scanned
+    4194304\n element-depth 512\n attribute-count 128\n max-node-size 33554432\n forbid-external-references
+    \n external-references forbid\n max-prefixes 0\n max-namespaces 0\n max-local-names
+    0\nexit\n\ndocumentcache \"MockServiceXMLMgr\"\n no policy\n maxdocs \"5000\"\n
+    size \"2048000\"\n max-writes \"32768\"\n policy \"*.xml\" \"128\" 90000 \"\"
+    off off off off off\nexit\nno xml validate \"MockServiceXMLMgr\" *\n\nxml-manager
+    \"MockServiceXMLMgr\"\n  user-agent \"default\"\nexit\n\nxmlmgr \"xmgrAirportService\"\nxsl
+    cache memorysize \"xmgrAirportService\" \"2147483647\"\nxsl cache size \"xmgrAirportService\"
+    \"256\"\nxsl checksummed cache xmgrAirportService\nno tx-warn \"xmgrAirportService\"\nmemoization
+    \"xmgrAirportService\"\n\nxml parser limits \"xmgrAirportService\"\n bytes-scanned
+    4194304\n element-depth 512\n attribute-count 128\n max-node-size 33554432\n forbid-external-references
+    \n external-references forbid\n max-prefixes 0\n max-namespaces 0\n max-local-names
+    0\nexit\n\ndocumentcache \"xmgrAirportService\"\n no policy\n maxdocs \"5000\"\n
+    size \"0\"\n max-writes \"32768\"\nexit\nno xml validate \"xmgrAirportService\"
+    *\n\nxml-manager \"xmgrAirportService\"\n  user-agent \"uaAirportService\"\n  json-parser-settings
+    \"jsonSettings\"\nexit\n\n%if% available \"aaapolicy\"\n\naaapolicy \"iop-mgmt-aaa\"\n
+    extract-identity  \"http-basic-auth+client-ssl\" \"\" \"\" \"\" \"\" \"login\"
+    \"off\" \"\" \"off\" \"\" \"xmlfile\" \"\" \"\" \"\" \"\" \"\" \"proxy\" \"\"
+    \"\" \"\" \"\"\n authenticate xmlfile \"store:///iop-mgmt-aaa.xml\" \"\" \"\"
+    \"\" \"absolute\" \"3\" \"\" \"\" \"\" \"\" \"\" \"on\" \"\" \"\" \"1.1\" \"cn=\"
+    \"\" \"\" \"\" \"\" \"\" \"\" \"\" \"\" \"\" \"\" \"\" \"userPassword\" \"LTPA2\"
+    \"\" \"\" \"\" \"\" \"\" \"off\" \"\" \"1.2\" \"off\" \"\" \"off\" \"32\" \"off\"
+    \"32\" \"off\" \"off\" \"\" \"\" \"\" \"\" \"0\" \"off\" \"60\" \"proxy\" \"\"
+    \"\" \"\" \"webagent\" \"\" \"\" \"\" \"default\"\n map-credentials xmlfile \"store:///iop-mgmt-aaa.xml\"
+    \"\" \"\"\n extract-resource  \"request-uri+request-opname\" \"\" \"\"\n map-resource
+    xmlfile \"store:///iop-mgmt-aaa.xml\" \"\" \"WebSEAL\" \"\" \"\"\n authorize xmlfile
+    \"store:///iop-mgmt-aaa.xml\" \"\" \"\" \"\" \"\" \"\" \"any\" \"\" \"\" \"absolute\"
+    \"3\" \"\" \"\" \"\" \"1.1\" \"\" \"\" \"\" \"member\" \"\" \"\" \"subtree\" \"(objectClass=*)\"
+    \"2.0\" \"deny-biased\" \"on\" \"\" \"\" \"custom\" \"\" \"\" \"\" \"off\" \"\"
+    \"T\" \"\" \"off\" \"\" \"r\" \"\" \"0\" \"tfim\" \"\" \"off\" \"on\" \"off\"
+    \"off\" \"60\" \"proxy\" \"\" \"\" \"webagent\" \"\" \"\" \"\" \"default\"\n post-process
+    \ \"off\" \"\" \"off\" \"XS\" \"\" \"off\" \"\" \"\" \"\" \"off\" \"on\" \"0\"
+    \"off\" \"2.0\" \"off\" \"\" \"\" \"off\" \"Digest\" \"0\" \"0\" \"on\" \"off\"
+    \"LTPA2\" \"600\" \"\" \"\" \"\" \"off\" \"http://docs.oasis-open.org/wss/oasis-wss-kerberos-token-profile-1.1#GSS_Kerberosv5_AP_REQ\"
+    \"off\" \"\" \"off\" \"\" \"off\" \"\" \"off\" \"1000\" \"off\" \"all\" \"CallTFIM\"
+    \"hmac-sha1\" \"sha1\" \"off\" \"random\" \"\" \"0\" \"off\" \"off\" \"off\" \"off\"
+    \"\" \"off\" \"assertion\" \"\" \"wssec-replace\" \"authentication+attribute\"
+    \"bearer\" \"on\" \"\" \"\" \"\" \"off\" \"off\" \"off\" \"\" \"0\" \"AllHTTP\"
+    \"\" \"on\" \"off\" \"iv-creds\" \"0\" \"off\" \"\" \"off\" \"mc-output\" \"\"
+    \"\" \"\" \"\" \"as-is-string\" \"\" \"\" \"proxy\" \"\" \"\" \"off\" \"\"\n  log-allowed
+    \n  log-allowed-level info\n  log-rejected \n  log-rejected-level warn\n  no ping-identity-compatibility
+    \n  dos-valve 3\n  ldap-version v2\n  enforce-actor-role \n  dyn-config none\nexit\n\n%endif%\n\n%if%
+    available \"source-https\"\n\nsource-https \"HTTPS_12101\"\n  local-address 0.0.0.0\n
+    \ port 12100\n  http-client-version HTTP/1.1\n  allowed-features \"HTTP-1.0+HTTP-1.1+POST+PUT+QueryString+FragmentIdentifiers\"
+    \n  persistent-connections \n  max-persistent-reuse 0\n  no compression \n  no
+    websocket-upgrade \n  websocket-idle-timeout 0\n  max-url-len 16384\n  max-total-header-len
+    128000\n  max-header-count 0\n  max-header-name-len 0\n  max-header-value-len
+    0\n  max-querystring-len 0\n  credential-charset protocol\n  ssl-config-type server\n
+    \ ssl-server BookingServiceSSLServerProfile\n  http2-max-streams 100\n  http2-max-frame
+    16384\n  no http2-stream-header \n  chunked-encoding \nexit\n\n%endif%\n\n%if%
+    available \"source-http\"\n\nsource-http \"Booking_JKLMN_HTTP_9080\"\n  local-address
+    127.0.0.1\n  port 9080\n  http-client-version HTTP/1.1\n  allowed-features \"HTTP-1.0+HTTP-1.1+POST+PUT+QueryString+FragmentIdentifiers\"
+    \n  persistent-connections \n  max-persistent-reuse 0\n  no compression \n  no
+    websocket-upgrade \n  websocket-idle-timeout 0\n  max-url-len 16384\n  max-total-header-len
+    128000\n  max-header-count 0\n  max-header-name-len 0\n  max-header-value-len
+    0\n  max-querystring-len 0\n  credential-charset protocol\n  http2-max-streams
+    100\n  http2-max-frame 16384\n  no http2-stream-header \n  chunked-encoding \nexit\n\nsource-http
+    \"http12001\"\n  local-address 0.0.0.0\n  port 12001\n  http-client-version HTTP/1.1\n
+    \ allowed-features \"HTTP-1.0+HTTP-1.1+POST+PUT+QueryString+FragmentIdentifiers\"
+    \n  persistent-connections \n  max-persistent-reuse 0\n  no compression \n  no
+    websocket-upgrade \n  websocket-idle-timeout 0\n  max-url-len 16384\n  max-total-header-len
+    128000\n  max-header-count 0\n  max-header-name-len 0\n  max-header-value-len
+    0\n  max-querystring-len 0\n  credential-charset protocol\n  http2-max-streams
+    100\n  http2-max-frame 16384\n  no http2-stream-header \n  chunked-encoding \nexit\n\nsource-http
+    \"httpAirportService\"\n  local-address 0.0.0.0\n  port 8888\n  http-client-version
+    HTTP/1.1\n  allowed-features \"HTTP-1.0+HTTP-1.1+POST+GET+PUT+QueryString+FragmentIdentifiers\"
+    \n  persistent-connections \n  max-persistent-reuse 0\n  no compression \n  no
+    websocket-upgrade \n  websocket-idle-timeout 0\n  max-url-len 16384\n  max-total-header-len
+    128000\n  max-header-count 0\n  max-header-name-len 0\n  max-header-value-len
+    0\n  max-querystring-len 0\n  credential-charset protocol\n  http2-max-streams
+    100\n  http2-max-frame 16384\n  no http2-stream-header \n  chunked-encoding \nexit\n\nsource-http
+    \"MockService_HTTP_\"\n  local-address 0.0.0.0\n  port 2068\n  http-client-version
+    HTTP/1.1\n  allowed-features \"HTTP-1.0+HTTP-1.1+POST+PUT+QueryString+FragmentIdentifiers\"
+    \n  persistent-connections \n  max-persistent-reuse 0\n  no compression \n  no
+    websocket-upgrade \n  websocket-idle-timeout 0\n  max-url-len 16384\n  max-total-header-len
+    128000\n  max-header-count 0\n  max-header-name-len 0\n  max-header-value-len
+    0\n  max-querystring-len 0\n  credential-charset protocol\n  http2-max-streams
+    100\n  http2-max-frame 16384\n  no http2-stream-header \n  chunked-encoding \nexit\n\n%endif%\n\n%if%
+    available \"wsm-stylepolicy\"\n\nwsm-stylepolicy \"default\"\n  summary \"Default
+    Processing Policy\"\n  filter \"store:///filter-reject-all.xsl\"\n  xsldefault
+    \"store:///identity.xsl\"\nexit\n\n%endif%\n\n%if% available \"gateway-peering\"\n\ngateway-peering
+    \"default-gateway-peering\"\n  admin-state disabled\n  local-address 0.0.0.0\n
+    \ local-port 16380\n  primary-count 1\n  monitor-port 26380\n  cluster-auto-config
+    \n  no enable-peer-group \n  priority 100\n  enable-ssl \n  persistence memory\n
+    \ local-directory local:///\n  log-level internal\n  max-memory 0\nexit\n\n%endif%\n\n%if%
+    available \"gateway-peering-manager\"\n\ngateway-peering-manager\n  admin-state
+    disabled\n  apic-gw-service default-gateway-peering\n  rate-limit default-gateway-peering\n
+    \ subscription default-gateway-peering\n  apiprobe default-gateway-peering\n  ratelimit-module
+    default-gateway-peering\nexit\n\n%endif%\n\n%if% available \"xmlfirewall\"\n\nxmlfirewall
+    \"fake-backend\"\n  local-address \"0.0.0.0\" \"2090\"\n  priority normal\n  default-param-namespace
+    \"http://www.datapower.com/param/config\"\n  query-param-namespace \"http://www.datapower.com/param/query\"\n
+    \ no force-policy-exec \n  monitor-processing-policy terminate-at-first-throttle\n
+    \ debugger-type internal\n  debug-history 25\n  remote-address %loopback%\n  xml-manager
+    default\n  stylesheet-policy fake-backend\n  max-message-size 0\n  request-type
+    unprocessed\n  response-type unprocessed\n  request-attachments strip\n  response-attachments
+    strip\n  root-part-not-first-action process-in-order\n  front-attachment-format
+    dynamic\n  back-attachment-format dynamic\n  mime-headers \n  rewrite-errors\n
+    \ delay-errors \n  delay-errors-duration 1000\n  soap-schema-url \"store:///schemas/soap-envelope.xsd\"\n
+    \ wsdl-response-policy off\n  no firewall-parser-limits \n  bytes-scanned 4194304\n
+    \ element-depth 512\n  attribute-count 128\n  max-node-size 33554432\n  forbid-external-references
+    \n  max-prefixes 1024\n  max-namespaces 1024\n  max-local-names 60000\n  attachment-byte-count
+    2000000000\n  attachment-package-byte-count 0\n  external-references forbid\n
+    \ credential-charset protocol\n  ssl-config-type proxy\nexit\n\nhttp \"fake-backend\"
+    xmlfirewall\n  http-timeout 120\n  persistent-timeout 180\n  host-rewriting \"on\"\n
+    \ no silence-warning \n  no compression \n  no include-response-type-encoding\n
+    \ no always-show-errors\n  disallow-get\n  no disallow-empty-reply\n  persistent-connections
+    \n  client-address \"X-Client-IP\"\n  http-global-tranID-label \"X-Global-Transaction-ID\"\n
+    \ httpproxy-port 800\n  version \"HTTP/1.1\" \"HTTP/1.1\"\n  no chunked-uploads
+    \nexit\n\n%endif%\n\n%if% available \"policy-attachments\"\n\npolicy-attachments
+    \"BaggageStatusMockService\"\n  enforcement-mode enforce\n  policy-references
+    \n  sla-enforcement-mode allow-if-no-sla\nexit\n\npolicy-attachments \"BookingServiceBackend\"\n
+    \ enforcement-mode enforce\n  policy-references \n  sla-enforcement-mode allow-if-no-sla\nexit\n\npolicy-attachments
+    \"BookingServiceProxy\"\n  enforcement-mode enforce\n  policy-references \n  sla-enforcement-mode
+    allow-if-no-sla\nexit\n\npolicy-attachments \"mpgwAirportService\"\n  enforcement-mode
+    enforce\n  policy-references \n  sla-enforcement-mode allow-if-no-sla\nexit\n\n%endif%\n\n%if%
+    available \"mpgw\"\n\nmpgw \"BaggageStatusMockService\"\n  no policy-parameters\n
+    \ summary \"a baggage status web service\"\n  priority normal\n  front-protocol
+    MockService_HTTP_\n  xml-manager default\n  ssl-client-type proxy\n  default-param-namespace
+    \"http://www.datapower.com/param/config\"\n  query-param-namespace \"http://www.datapower.com/param/query\"\n
+    \ propagate-uri \n  monitor-processing-policy terminate-at-first-throttle\n  request-attachments
+    strip\n  response-attachments strip\n  no request-attachments-flow-control \n
+    \ no response-attachments-flow-control \n  root-part-not-first-action process-in-order\n
+    \ front-attachment-format dynamic\n  back-attachment-format dynamic\n  mime-front-headers
+    \n  mime-back-headers \n  stream-output-to-back buffer-until-verification\n  stream-output-to-front
+    buffer-until-verification\n  max-message-size 0\n  no gateway-parser-limits \n
+    \ element-depth 512\n  attribute-count 128\n  max-node-size 33554432\n  forbid-external-references
+    \n  external-references forbid\n  max-prefixes 0\n  max-namespaces 0\n  max-local-names
+    0\n  attachment-byte-count 2000000000\n  attachment-package-byte-count 0\n  debugger-type
+    internal\n  debug-history 25\n  no flowcontrol \n  soap-schema-url \"store:///schemas/soap-envelope.xsd\"\n
+    \ front-timeout 120\n  back-timeout 120\n  front-persistent-timeout 180\n  back-persistent-timeout
+    180\n  no include-content-type-encoding \n  persistent-connections \n  no loop-detection
+    \n  host-rewriting \n  no chunked-uploads \n  process-http-errors \n  http-client-ip-label
+    \"X-Client-IP\"\n  http-global-tranID-label \"X-Global-Transaction-ID\"\n  inorder-mode
+    \"\" \n  wsa-mode sync2sync\n  wsa-require-aaa \n  wsa-strip-headers \n  wsa-default-replyto
+    \"http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous\"\n  wsa-default-faultto
+    \"http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous\"\n  no wsa-force
+    \n  wsa-genstyle sync\n  wsa-http-async-response-code 204\n  wsa-timeout 120\n
+    \ no wsrm \n  wsrm-sequence-expiration 3600\n  wsrm-destination-accept-create-sequence
+    \n  wsrm-destination-maximum-sequences 400\n  no wsrm-destination-inorder \n  wsrm-destination-maximum-inorder-queue-length
+    10\n  no wsrm-destination-accept-offers \n  no wsrm-request-force \n  no wsrm-response-force
+    \n  no wsrm-source-request-create-sequence \n  no wsrm-source-response-create-sequence
+    \n  no wsrm-source-make-offer \n  no wsrm-source-sequence-ssl \n  wsrm-source-maximum-sequences
+    400\n  wsrm-source-retransmission-interval 10\n  wsrm-source-exponential-backoff
+    \n  wsrm-source-retransmit-count 4\n  wsrm-source-maximum-queue-length 30\n  wsrm-source-request-ack-count
+    1\n  wsrm-source-inactivity-close-interval 360\n  no force-policy-exec \n  rewrite-errors
+    \n  delay-errors \n  delay-errors-duration 1000\n  http-server-version HTTP/1.1\n
+    \ no http2-required \n  request-type soap\n  response-type unprocessed\n  follow-redirects
+    \n  no rewrite-location-header \n  stylepolicy BaggageStatusPolicy\n  type dynamic-backend\n
+    \ no compression \n  no enable-compressed-payload-passthrough \n  no allow-cache-control
+    \n  policy-attachments BaggageStatusMockService\n  no wsmagent-monitor \n  wsmagent-monitor-capture-mode
+    all-messages\n  no proxy-http-response \n  transaction-timeout 0\nexit\n\nmpgw
+    \"BookingServiceBackend\"\n  no policy-parameters\n  priority normal\n  front-protocol
+    Booking_JKLMN_HTTP_9080\n  xml-manager BookingServiceBackend_XMLM\n  ssl-client-type
+    proxy\n  suppress \"front\" \"X-Backside-Transport\"\n  suppress \"back\" \"X-Backside-Transport\"\n
+    \ default-param-namespace \"http://www.datapower.com/param/config\"\n  query-param-namespace
+    \"http://www.datapower.com/param/query\"\n  propagate-uri \n  monitor-processing-policy
+    terminate-at-first-throttle\n  request-attachments strip\n  response-attachments
+    strip\n  no request-attachments-flow-control \n  no response-attachments-flow-control
+    \n  root-part-not-first-action process-in-order\n  front-attachment-format dynamic\n
+    \ back-attachment-format dynamic\n  mime-front-headers \n  mime-back-headers \n
+    \ stream-output-to-back buffer-until-verification\n  stream-output-to-front buffer-until-verification\n
+    \ max-message-size 0\n  no gateway-parser-limits \n  element-depth 512\n  attribute-count
+    128\n  max-node-size 33554432\n  forbid-external-references \n  external-references
+    forbid\n  max-prefixes 0\n  max-namespaces 0\n  max-local-names 0\n  attachment-byte-count
+    2000000000\n  attachment-package-byte-count 0\n  debugger-type internal\n  debug-history
+    25\n  no flowcontrol \n  soap-schema-url \"store:///schemas/soap-envelope.xsd\"\n
+    \ front-timeout 120\n  back-timeout 120\n  front-persistent-timeout 180\n  back-persistent-timeout
+    180\n  no include-content-type-encoding \n  no persistent-connections \n  no loop-detection
+    \n  host-rewriting \n  no chunked-uploads \n  process-http-errors \n  http-client-ip-label
+    \"X-Client-IP\"\n  http-global-tranID-label \"X-Global-Transaction-ID\"\n  inorder-mode
+    \"\" \n  wsa-mode sync2sync\n  wsa-require-aaa \n  wsa-strip-headers \n  wsa-default-replyto
+    \"http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous\"\n  wsa-default-faultto
+    \"http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous\"\n  no wsa-force
+    \n  wsa-genstyle sync\n  wsa-http-async-response-code 204\n  wsa-timeout 120\n
+    \ no wsrm \n  wsrm-sequence-expiration 3600\n  wsrm-destination-accept-create-sequence
+    \n  wsrm-destination-maximum-sequences 400\n  no wsrm-destination-inorder \n  wsrm-destination-maximum-inorder-queue-length
+    10\n  no wsrm-destination-accept-offers \n  no wsrm-request-force \n  no wsrm-response-force
+    \n  no wsrm-source-request-create-sequence \n  no wsrm-source-response-create-sequence
+    \n  no wsrm-source-make-offer \n  no wsrm-source-sequence-ssl \n  wsrm-source-maximum-sequences
+    400\n  wsrm-source-retransmission-interval 10\n  wsrm-source-exponential-backoff
+    \n  wsrm-source-retransmit-count 4\n  wsrm-source-maximum-queue-length 30\n  wsrm-source-request-ack-count
+    1\n  wsrm-source-inactivity-close-interval 360\n  no force-policy-exec \n  rewrite-errors
+    \n  delay-errors \n  delay-errors-duration 1000\n  http-server-version HTTP/1.1\n
+    \ no http2-required \n  request-type soap\n  response-type soap\n  follow-redirects
+    \n  no rewrite-location-header \n  stylepolicy BookingServiceBackendPolicy\n  type
+    dynamic-backend\n  no compression \n  no enable-compressed-payload-passthrough
+    \n  no allow-cache-control \n  policy-attachments BookingServiceBackend\n  no
+    wsmagent-monitor \n  wsmagent-monitor-capture-mode all-messages\n  no proxy-http-response
+    \n  transaction-timeout 0\nexit\n\nmpgw \"BookingServiceProxy\"\n  no policy-parameters\n
+    \ priority normal\n  front-protocol http12001\n  front-protocol HTTPS_12101\n
+    \ xml-manager default\n  ssl-client-type proxy\n  default-param-namespace \"http://www.datapower.com/param/config\"\n
+    \ query-param-namespace \"http://www.datapower.com/param/query\"\n  backend-url
+    \"http://127.0.0.1:9080\"\n  propagate-uri \n  monitor-processing-policy terminate-at-first-throttle\n
+    \ request-attachments strip\n  response-attachments strip\n  no request-attachments-flow-control
+    \n  no response-attachments-flow-control \n  root-part-not-first-action process-in-order\n
+    \ front-attachment-format dynamic\n  back-attachment-format dynamic\n  mime-front-headers
+    \n  mime-back-headers \n  stream-output-to-back buffer-until-verification\n  stream-output-to-front
+    buffer-until-verification\n  max-message-size 0\n  no gateway-parser-limits \n
+    \ element-depth 512\n  attribute-count 128\n  max-node-size 33554432\n  forbid-external-references
+    \n  external-references forbid\n  max-prefixes 1024\n  max-namespaces 1024\n  max-local-names
+    60000\n  attachment-byte-count 2000000000\n  attachment-package-byte-count 0\n
+    \ debugger-type internal\n  debug-history 25\n  no flowcontrol \n  soap-schema-url
+    \"store:///schemas/soap-envelope.xsd\"\n  front-timeout 120\n  back-timeout 120\n
+    \ front-persistent-timeout 180\n  back-persistent-timeout 180\n  no include-content-type-encoding
+    \n  persistent-connections \n  no loop-detection \n  host-rewriting \n  no chunked-uploads
+    \n  process-http-errors \n  http-client-ip-label \"X-Client-IP\"\n  http-global-tranID-label
+    \"X-Global-Transaction-ID\"\n  inorder-mode \"\" \n  wsa-mode sync2sync\n  wsa-require-aaa
+    \n  wsa-strip-headers \n  wsa-default-replyto \"http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous\"\n
+    \ wsa-default-faultto \"http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous\"\n
+    \ no wsa-force \n  wsa-genstyle sync\n  wsa-http-async-response-code 204\n  wsa-timeout
+    120\n  no wsrm \n  wsrm-sequence-expiration 3600\n  wsrm-destination-accept-create-sequence
+    \n  wsrm-destination-maximum-sequences 400\n  no wsrm-destination-inorder \n  wsrm-destination-maximum-inorder-queue-length
+    10\n  no wsrm-destination-accept-offers \n  no wsrm-request-force \n  no wsrm-response-force
+    \n  no wsrm-source-request-create-sequence \n  no wsrm-source-response-create-sequence
+    \n  no wsrm-source-make-offer \n  no wsrm-source-sequence-ssl \n  wsrm-source-maximum-sequences
+    400\n  wsrm-source-retransmission-interval 10\n  wsrm-source-exponential-backoff
+    \n  wsrm-source-retransmit-count 4\n  wsrm-source-maximum-queue-length 30\n  wsrm-source-request-ack-count
+    1\n  wsrm-source-inactivity-close-interval 360\n  no force-policy-exec \n  rewrite-errors
+    \n  delay-errors \n  delay-errors-duration 1000\n  http-server-version HTTP/1.1\n
+    \ no http2-required \n  request-type soap\n  response-type soap\n  follow-redirects
+    \n  no rewrite-location-header \n  stylepolicy BookingservicePolicy\n  type static-backend\n
+    \ no compression \n  no enable-compressed-payload-passthrough \n  no allow-cache-control
+    \n  policy-attachments BookingServiceProxy\n  no wsmagent-monitor \n  wsmagent-monitor-capture-mode
+    all-messages\n  no proxy-http-response \n  transaction-timeout 0\nexit\n\nmpgw
+    \"mpgwAirportService\"\n  no policy-parameters\n  summary \"Mock Airport REST
+    Service\"\n  priority normal\n  front-protocol httpAirportService\n  xml-manager
+    xmgrAirportService\n  ssl-client-type proxy\n  default-param-namespace \"http://www.datapower.com/param/config\"\n
+    \ query-param-namespace \"http://www.datapower.com/param/query\"\n  backend-url
+    \"http://dynamic\"\n  propagate-uri \n  monitor-processing-policy terminate-at-first-throttle\n
+    \ request-attachments strip\n  response-attachments strip\n  no request-attachments-flow-control
+    \n  no response-attachments-flow-control \n  root-part-not-first-action process-in-order\n
+    \ front-attachment-format dynamic\n  back-attachment-format dynamic\n  mime-front-headers
+    \n  mime-back-headers \n  stream-output-to-back buffer-until-verification\n  stream-output-to-front
+    buffer-until-verification\n  max-message-size 0\n  no gateway-parser-limits \n
+    \ element-depth 512\n  attribute-count 128\n  max-node-size 33554432\n  forbid-external-references
+    \n  external-references forbid\n  max-prefixes 0\n  max-namespaces 0\n  max-local-names
+    0\n  attachment-byte-count 2000000000\n  attachment-package-byte-count 0\n  debugger-type
+    internal\n  debug-history 25\n  no flowcontrol \n  soap-schema-url \"store:///schemas/soap-envelope.xsd\"\n
+    \ front-timeout 120\n  back-timeout 120\n  front-persistent-timeout 180\n  back-persistent-timeout
+    180\n  no include-content-type-encoding \n  persistent-connections \n  no loop-detection
+    \n  host-rewriting \n  no chunked-uploads \n  process-http-errors \n  http-client-ip-label
+    \"X-Client-IP\"\n  http-global-tranID-label \"X-Global-Transaction-ID\"\n  inorder-mode
+    \"\" \n  wsa-mode sync2sync\n  wsa-require-aaa \n  wsa-strip-headers \n  wsa-default-replyto
+    \"http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous\"\n  wsa-default-faultto
+    \"http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous\"\n  no wsa-force
+    \n  wsa-genstyle sync\n  wsa-http-async-response-code 204\n  wsa-timeout 120\n
+    \ no wsrm \n  wsrm-sequence-expiration 3600\n  wsrm-destination-accept-create-sequence
+    \n  wsrm-destination-maximum-sequences 400\n  no wsrm-destination-inorder \n  wsrm-destination-maximum-inorder-queue-length
+    10\n  no wsrm-destination-accept-offers \n  no wsrm-request-force \n  no wsrm-response-force
+    \n  no wsrm-source-request-create-sequence \n  no wsrm-source-response-create-sequence
+    \n  no wsrm-source-make-offer \n  no wsrm-source-sequence-ssl \n  wsrm-source-maximum-sequences
+    400\n  wsrm-source-retransmission-interval 10\n  wsrm-source-exponential-backoff
+    \n  wsrm-source-retransmit-count 4\n  wsrm-source-maximum-queue-length 30\n  wsrm-source-request-ack-count
+    1\n  wsrm-source-inactivity-close-interval 360\n  force-policy-exec \n  rewrite-errors
+    \n  delay-errors \n  delay-errors-duration 1000\n  http-server-version HTTP/1.1\n
+    \ no http2-required \n  request-type preprocessed\n  response-type json\n  follow-redirects
+    \n  no rewrite-location-header \n  stylepolicy polAirportService\n  type dynamic-backend\n
+    \ no compression \n  no enable-compressed-payload-passthrough \n  no allow-cache-control
+    \n  policy-attachments mpgwAirportService\n  no wsmagent-monitor \n  wsmagent-monitor-capture-mode
+    all-messages\n  no proxy-http-response \n  transaction-timeout 0\nexit\n\n%endif%\n\nstatistics\n\n%if%
+    available \"apic-gw-service\"\n\napic-gw-service\n  admin-state disabled\n  local-address
+    0.0.0.0\n  local-port 3000\n  api-gw-address 0.0.0.0\n  api-gw-port 9443\n  gateway-peering
+    default-gateway-peering\n  gateway-peering-manager default\n  v5-compatibility-mode
+    \n  slm-mode autounicast\n  no database-mode \n  no log-strip-non-ascii \nexit\n\n%endif%\n\n%if%
+    available \"apiprobe-settings\"\n\napiprobe-settings\n  admin-state disabled\n
+    \ max-records 1000\n  expiration 60\n  gateway-peering default-gateway-peering\nexit\n\n%endif%\n\n%if%
+    available \"api-security-token-manager\"\n\napi-security-token-manager\n  admin-state
+    disabled\n  gateway-peering default-gateway-peering\nexit\n\n%endif%\n\n%if% available
+    \"smtp-server-connection\"\n\nsmtp-server-connection \"default\"\n  summary \"Default
+    SMTP Server Connection\"\n  server-host smtp\n  server-port 25\n  auth plain\n
+    \ ssl-client-type proxy\nexit\n\n%endif%\n\n%if% available \"control-list\"\n\ncontrol-list
+    \"default-accept-all\"\n  type blocklist\n  no case-insensitive \nexit\n\ncontrol-list
+    \"default-reject-all\"\n  type allowlist\n  no case-insensitive \nexit\n\n%endif%\n\ncrypto\n
+    \ \n%if% available \"sshdomainclientprofile\"\n\nsshdomainclientprofile\n  no
+    ciphers\n  no kex-alg\n  no mac-alg\n  admin-state enabled\n  ciphers CHACHA20-POLY1305_AT_OPENSSH.COM\n
+    \ ciphers AES128-CTR\n  ciphers AES192-CTR\n  ciphers AES256-CTR\n  ciphers AES128-GCM_AT_OPENSSH.COM\n
+    \ ciphers AES256-GCM_AT_OPENSSH.COM\n  ciphers AES128-CBC\n  ciphers BLOWFISH-CBC\n
+    \ ciphers CAST128-CBC\n  ciphers AES192-CBC\n  ciphers AES256-CBC\n  ciphers RIJNDAEL-CBC_AT_LYSATOR.LIU.SE\n
+    \ kex-alg CURVE25519-SHA256_AT_LIBSSH.ORG\n  kex-alg ECDH-SHA2-NISTP256\n  kex-alg
+    ECDH-SHA2-NISTP384\n  kex-alg ECDH-SHA2-NISTP521\n  kex-alg DIFFIE-HELLMAN-GROUP-EXCHANGE-SHA256\n
+    \ kex-alg DIFFIE-HELLMAN-GROUP14-SHA1\n  mac-alg UMAC-64-ETM_AT_OPENSSH.COM\n
+    \ mac-alg UMAC-128-ETM_AT_OPENSSH.COM\n  mac-alg HMAC-SHA2-256-ETM_AT_OPENSSH.COM\n
+    \ mac-alg HMAC-SHA2-512-ETM_AT_OPENSSH.COM\n  mac-alg HMAC-SHA1-ETM_AT_OPENSSH.COM\n
+    \ mac-alg UMAC-64_AT_OPENSSH.COM\n  mac-alg UMAC-128_AT_OPENSSH.COM\n  mac-alg
+    HMAC-SHA2-256\n  mac-alg HMAC-SHA2-512\n  mac-alg HMAC-SHA1\n  enable-legacy-kex
+    no\nexit\n\n%endif%\n\nexit\n\ncrypto\n  \n%if% available \"sshserverprofile\"\n\nsshserverprofile\n
+    \ no ciphers\n  no kex-alg\n  no mac-alg\n  admin-state enabled\n  ciphers CHACHA20-POLY1305_AT_OPENSSH.COM\n
+    \ ciphers AES128-CTR\n  ciphers AES192-CTR\n  ciphers AES256-CTR\n  ciphers AES128-GCM_AT_OPENSSH.COM\n
+    \ ciphers AES256-GCM_AT_OPENSSH.COM\n  ciphers AES128-CBC\n  ciphers BLOWFISH-CBC\n
+    \ ciphers CAST128-CBC\n  ciphers AES192-CBC\n  ciphers AES256-CBC\n  ciphers RIJNDAEL-CBC_AT_LYSATOR.LIU.SE\n
+    \ kex-alg CURVE25519-SHA256_AT_LIBSSH.ORG\n  kex-alg ECDH-SHA2-NISTP256\n  kex-alg
+    ECDH-SHA2-NISTP384\n  kex-alg ECDH-SHA2-NISTP521\n  kex-alg DIFFIE-HELLMAN-GROUP-EXCHANGE-SHA256\n
+    \ kex-alg DIFFIE-HELLMAN-GROUP14-SHA1\n  mac-alg UMAC-64-ETM_AT_OPENSSH.COM\n
+    \ mac-alg UMAC-128-ETM_AT_OPENSSH.COM\n  mac-alg HMAC-SHA2-256-ETM_AT_OPENSSH.COM\n
+    \ mac-alg HMAC-SHA2-512-ETM_AT_OPENSSH.COM\n  mac-alg HMAC-SHA1-ETM_AT_OPENSSH.COM\n
+    \ mac-alg UMAC-64_AT_OPENSSH.COM\n  mac-alg UMAC-128_AT_OPENSSH.COM\n  mac-alg
+    HMAC-SHA2-256\n  mac-alg HMAC-SHA2-512\n  mac-alg HMAC-SHA1\n  enable-legacy-kex
+    no\n  send-preauth-msg no\nexit\n\n%endif%\n\nexit\n\n%if% available \"domain-availability\"\n\ndomain-availability\n
+    \ admin-state enabled\nexit\n\n%endif%\n\n%if% available \"nfs-dynamic-mounts\"\n\nnfs-dynamic-mounts\n
+    \ admin-state disabled\n  version 3\n  transport tcp\n  mount-type hard\n  no
+    read-only \n  rsize 4096\n  wsize 4096\n  timeo 7\n  retrans 3\n  inactivity-timeout
+    900\n  mount-timeout 30\nexit\n\n%endif%\n\n%if% available \"rate-limit-config\"\n\nrate-limit-config\n
+    \ admin-state enabled\n  no advanced-tuning \n  scale-collector-interval 100\n
+    \ scale-cache-table-count 1\n  scale-cache-cleanup-interval 1000\n  gateway-peering-manager
+    default\nexit\n\n%endif%\n\n%if% available \"httpserv\"\n\nhttpserv \"ECHO\"\n
+    \ ip-address 0.0.0.0\n  priority normal\n  port 8890\n  mode echo\n  local-directory
+    store:///\nexit\n\nhttpserv \"POT_WWW\"\n  ip-address 0.0.0.0\n  priority normal\n
+    \ port 80\n  mode normal\n  local-directory local:///www/ibmair\n  start-page
+    local:///www/ibmair/index.html\nexit\n\n%endif%\n\n%if% available \"slm-action\"\n\nslm-action
+    \"notify\"\n  type log-only\n  log-priority warn\nexit\n\nslm-action \"shape\"\n
+    \ type shape\n  log-priority debug\nexit\n\nslm-action \"throttle\"\n  type reject\n
+    \ log-priority debug\nexit\n\n%endif%\n\n%if% available \"api-client-identification\"\n\napi-client-identification
+    \"default-api-client-identification\"\n  title \"default-client-identification\"\n
+    \ correlation-path \"$.assembly.execute[2]\"\nexit\n\n%endif%\n\n%if% available
+    \"api-cors\"\n\napi-cors \"default-api-cors\"\n  title \"default-cors\"\n  correlation-path
+    \"$.assembly.execute[0]\"\nexit\n\n%endif%\n\n%if% available \"wsm-agent\"\n\nwsm-agent\n
+    \ admin-state disabled\n  max-records 3000\n  max-memory 64000\n  capture-mode
+    faults\n  buffer-mode discard\n  no mediation-enforcement-metrics \n  max-payload-size
+    0\n  push-interval 100\n  push-priority normal\nexit\n\n%endif%\n"
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: booking-service-local
