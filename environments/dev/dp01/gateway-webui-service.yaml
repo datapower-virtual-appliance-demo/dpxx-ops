@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: dp01-webui
+  namespace: dp01-ns
+spec:
+  selector:
+    app: dp01-webui
+  ports:
+    - name: webui
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
