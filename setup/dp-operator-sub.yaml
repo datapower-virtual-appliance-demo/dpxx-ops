@@ -1,0 +1,14 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  labels:
+    operators.coreos.com/datapower-operator.dp01-ns: ''
+  name: datapower-operator
+  namespace: dp01-ns
+spec:
+  channel: v1.6
+  installPlanApproval: Manual
+  name: datapower-operator
+  source: ibm-operator-catalog
+  sourceNamespace: openshift-marketplace
+  startingCSV: datapower-operator.v1.6.2
