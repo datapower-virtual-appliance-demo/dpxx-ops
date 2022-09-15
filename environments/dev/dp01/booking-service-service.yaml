@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: dp01-booking-service
+  namespace: dp01-ns
+spec:
+  selector:
+    app.kubernetes.io/instance: dp01-ns-dp01
+  ports:
+    - name: booking-service
+      protocol: TCP
+      port: 12001
+      targetPort: 12001
+    - name: booking-service-ssl
+      protocol: TCP
+      port: 12100
+      targetPort: 12100
