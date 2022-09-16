@@ -33,4 +33,5 @@ spec:
           - booking-service-local
       name: Booking
   version: 10.0-cd
+  image: image-registry.openshift-image-registry.svc:5000/dp01-ns/dp01:0.0.1
   replicas: 1
