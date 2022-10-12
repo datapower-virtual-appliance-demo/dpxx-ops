@@ -11,6 +11,12 @@ Operational repository to deploy to the cluster
 oc apply -f setup/catalog-sources.yaml
 ```
 
+## Create Datapower `dev` namespace 
+
+```bash
+oc apply -f setup/dev-namespace.yaml
+```
+
 ## Install DataPower operator
 
 ```bash
