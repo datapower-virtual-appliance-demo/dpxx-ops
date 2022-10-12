@@ -23,4 +23,8 @@ oc apply -f setup/dev-namespace.yaml
 oc apply -f setup/dp-operator-sub.yaml
 ```
 
+* Manually approve in OCP UI
+
+* Fix this with oc patch
+
 ## 
