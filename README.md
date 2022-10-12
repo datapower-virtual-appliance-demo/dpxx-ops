@@ -8,13 +8,13 @@ Operational repository to deploy to the cluster
 ## Create catalog sources
 
 ```bash
-oc apply setup/catalog-sources.yaml
+oc apply -f setup/catalog-sources.yaml
 ```
 
 ## Install DataPower operator
 
 ```bash
-oc apply setup/dp-operator-sub.yaml
+oc apply -f setup/dp-operator-sub.yaml
 ```
 
 ## 
