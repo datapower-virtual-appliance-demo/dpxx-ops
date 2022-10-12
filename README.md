@@ -27,4 +27,16 @@ oc apply -f setup/dp-operator-sub.yaml
 
 * Fix this with oc patch
 
+```bash
+oc get installplan -n dp01-mgmt -o yaml | grep "name: in" | awk '{print$2}' | xarg oc patch installplan install-xxxxx \
+    --namespace openshift-logging \
+    --type merge \
+    --patch '{"spec":{"approved":true}}'
+
+oc patch installplan install-xxxxx \
+    --namespace openshift-logging \
+    --type merge \
+    --patch '{"spec":{"approved":true}}'
+```
+
 ## 
