@@ -1,0 +1,13 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: dp01-mgmt
+  labels:
+    name: dp01-mgmt
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: dp01-dev
+  labels:
+    name: dp01-dev
