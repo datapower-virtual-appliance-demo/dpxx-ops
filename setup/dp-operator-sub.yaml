@@ -11,4 +11,4 @@ spec:
   name: datapower-operator
   source: ibm-operator-catalog
   sourceNamespace: openshift-marketplace
-  startingCSV: datapower-operator.v1.6.2
+  startingCSV: datapower-operator.v1.6.3
