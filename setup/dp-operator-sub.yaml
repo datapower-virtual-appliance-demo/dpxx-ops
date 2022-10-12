@@ -4,7 +4,7 @@ metadata:
   labels:
     operators.coreos.com/datapower-operator.dp01-ns: ''
   name: datapower-operator
-  namespace: dp01-ns
+  namespace: dp01-mgmt
 spec:
   channel: v1.6
   installPlanApproval: Manual
