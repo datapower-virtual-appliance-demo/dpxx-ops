@@ -22,6 +22,13 @@ oc apply -f setup/namespaces.yaml
 ```bash
 oc apply -f setup/argocd-operator-sub.yaml
 ```
+HERE!
+oc get installplan -n dp01-mgmt -o yaml | grep "name: in" | awk '{print$2}' | xarg oc patch installplan install-xxxxx \
+    --namespace openshift-logging \
+    --type merge \
+    --patch '{"spec":{"approved":true}}'
+
+
 
 ## Install Tekton pipelines
 
