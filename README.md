@@ -14,7 +14,19 @@ oc apply -f setup/catalog-sources.yaml
 ## Create Datapower `dev` namespace 
 
 ```bash
-oc apply -f setup/dev-namespace.yaml
+oc apply -f setup/namespaces.yaml
+```
+
+## Install ArgoCD 
+
+```bash
+oc apply -f setup/argocd-operator-sub.yaml
+```
+
+## Install Tekton pipelines
+
+```bash
+oc apply -f setup/tekton-operator-sub.yaml
 ```
 
 ## Install DataPower operator
