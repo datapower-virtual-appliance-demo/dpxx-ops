@@ -81,32 +81,67 @@ Issue the following command:
 
 ```bash
 cd dp01-ops
-ls ...
+cat setup/namespaces.yaml
 ```
 
+which shows the following YAMLs.
 
-Moreover, we're going to set up the cluster such that the cluster is **automatically** updated whenever this repository changes.
+```yaml
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: dp01-mgmt
+  labels:
+    name: dp01-mgmt
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: dp01-dev
+  labels:
+    name: dp01-dev
+```
+
+These YAMLs will define two namespaces `dp01-mgmt` and `dp01-dev` which will be used to store Kubernetes resources for this tutorial. We'll explore the respository in more detail as we proceed through the tutorial.
 
 ---
 
 ## Create Datapower `dev` namespace 
 
-
+Let's use this YAML to define two namespaces in our cluster:
 
 ```bash
 oc apply -f setup/namespaces.yaml
 ```
 
+which will create the `dp01-mgmt` and `dp01-dev` namespaces in the cluster.
+
+```bash
+namespace/dp01-mgmt created
+namespace/dp01-dev created
+```
+
+We'll see how: 
+
+- the `dp01-mgmt` namespace is used to store generic Kubernetes resources catalog sources and operators.
+- the `dp01-dev` namespace is used to store specific Kubernetes resources relating to `dp01`.
+
+As the turorial proceeds, we'll see how the contents of the `dp01-ops` repository **fully** defines the contents of all resources relating to our DataPower deployment. Moreover, we're going to set up the cluster such it is **automatically** updated whenever this `dp01-ops` repository changes. This concept is called **continuous deployemnt** and we'll use ArgoCD to acheive it.
+
 ---
 
 ## Install ArgoCD 
 
-The contents of the 
+Let's install ArgoCD to enable continuous deployment: 
+
+Use the following command to create a subscription for ArgoCD:
 
 ```bash
 oc apply -f setup/argocd-operator-sub.yaml
 ```
-HERE!
+
+
+
 oc get installplan -n dp01-mgmt -o yaml | grep "name: in" | awk '{print$2}' | xarg oc patch installplan install-xxxxx \
     --namespace openshift-logging \
     --type merge \
