@@ -140,12 +140,19 @@ Use the following command to create a subscription for ArgoCD:
 oc apply -f setup/argocd-operator-sub.yaml
 ```
 
+which will create a subscription for ArgoCD: HERE!!
 
+```bash
+subscription.operators.coreos.com/openshift-gitops-operator created
+```
 
-oc get installplan -n dp01-mgmt -o yaml | grep "name: in" | awk '{print$2}' | xarg oc patch installplan install-xxxxx \
-    --namespace openshift-logging \
-    --type merge \
-    --patch '{"spec":{"approved":true}}'
+We need to manually approve the install plan
+
+oc get installplan -n dp01-mgmt -o yaml | grep "name: in" | awk '{print$2}' | \
+xarg oc patch installplan 
+ --namespace openshift-logging \
+ --type merge \
+ --patch '{"spec":{"approved":true}}'
 
 ---
 
