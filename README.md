@@ -1,7 +1,20 @@
-# dp-auto-ops
-Operational repository to deploy to the cluster
+# Datapower DevOps tutorial
+
+This tutorial demonstrates how to do CICD with DataPower using GitOps on Kubernetes. It uses:
+
+- Git 
+- Kubernetes
+- Image registry
+- ArgoCD
+- Tekton
+- IBM DataPower operators
+- IBM DataPower containers
+
+After completing this tutorial, you will have 
 
 ## Overview
+
+## Introduction 
 
 The following diagram shows a GitOps CICD pipeline for DataPower:
 
