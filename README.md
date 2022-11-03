@@ -1,15 +1,3 @@
-# Datapower DevOps tutorial
-
- It uses:
-
-- Git
-- Kubernetes
-- Image registry
-- ArgoCD
-- Tekton
-- IBM DataPower operators
-- IBM DataPower containers
-
 ## Overview
 
 This tutorial demonstrates how to do CICD with DataPower using GitOps on Kubernetes. You will:
@@ -17,7 +5,7 @@ This tutorial demonstrates how to do CICD with DataPower using GitOps on Kuberne
 - Set up source and operational Git repositories for a virtual DataPower appliance.
 - Create a Kubernetes cluster and image registry, if required.
 - Install ArgoCD applications to manage cluster deployment of DataPower-related Kubernetes resources.
-- Run Tekton piplelines to allow you to generate fully tested DataPower-related resources ready for deployment.
+- Run a Tekton pipleline to build, test, version and deliver the DataPower-related resources ready for deployment.
 - Gain experience with the IBM-supplied DataPower operator and container.
 
 At the end of this tutorial, you will have a solid foundation of GitOps and CICD for DataPower in a Kubernetes environment.
