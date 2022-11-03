@@ -43,20 +43,27 @@ Cover Minikube OCP options -->links
 
 ## Fork repository
 [Fork this repository](https://github.com/dp-auto/dpxx-ops/generate) from a `Template`. 
-  - Ensure you include all branches by tickinging `Include all branches`. 
-  - Fork the respository to **your Git user** e.g. `<mygituser>/dp01-ops`
+  - In the `Repsoitory name` field, specify `dp01-ops`
+
+This repsoitory will be cloned to the specified GitHub account.
 
 ---
 
 ## Clone repository to your local machine
 
-Open new Terminal
+We're going to use the contents of this repository to configure our cluster for CICD and GitOps. We're going to use a copy of the `dp01-ops` respository on our local machine to do this.
 
-Set userid, to your userid, e.g. `odowdaibm`
+Open new Terminal window. 
+
+In it, store your Git userId in the `GITUSER` environment variable, e.g. `odowdaibm`
 
 ```bash
 export GITUSER=odowdaibm
 ```
+
+Now clone the respository to your local machine. It's best practice to store all git repositories of a common root folder called `git`. We will keep both the dp01 source and operation repositories under a subfolder `datapower`.
+
+Issue the following commands to optionally create this folder structure, and clone the `dp01-ops` repository.
 
 ```bash
 mkdir -p $HOME/git/datapower
@@ -66,7 +73,35 @@ git clone git@github.com:$GITUSER/dp01-ops.git
 
 ---
 
+## Explore the `dp01-ops` repository
+
+The contents of the `dp01-ops` repository will be synchronized with the Kubernetes cluster such that every object in the repository wil be deployed to the cluster. Let's briefly explore the contents of this repository.
+
+Issue the following command:
+
+```bash
+cd dp01-ops
+ls ...
+```
+
+
+Moreover, we're going to set up the cluster such that the cluster is **automatically** updated whenever this repository changes.
+
+---
+
+## Create Datapower `dev` namespace 
+
+
+
+```bash
+oc apply -f setup/namespaces.yaml
+```
+
+---
+
 ## Install ArgoCD 
+
+The contents of the 
 
 ```bash
 oc apply -f setup/argocd-operator-sub.yaml
@@ -96,14 +131,6 @@ kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previou
 
 ```bash
 oc apply -f setup/catalog-sources.yaml
-```
-
----
-
-## Create Datapower `dev` namespace 
-
-```bash
-oc apply -f setup/namespaces.yaml
 ```
 
 ## Install DataPower operator
