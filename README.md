@@ -41,13 +41,6 @@ Cover Minikube OCP options -->links
 
 ---
 
-## install Tekton 
-  - operator hub or CLI (minikube)?  
-  - (manual Tekton install: kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.16.3/release.yaml)
-  - (manual approval)
-
----
-
 ## Fork repository
 [Fork this repository](https://github.com/dp-auto/dpxx-ops/generate) from a `Template`. 
   - Ensure you include all branches by tickinging `Include all branches`. 
@@ -73,22 +66,6 @@ git clone git@github.com:$GITUSER/dp01-ops.git
 
 ---
 
-## Create catalog sources
-
-```bash
-oc apply -f setup/catalog-sources.yaml
-```
-
----
-
-## Create Datapower `dev` namespace 
-
-```bash
-oc apply -f setup/namespaces.yaml
-```
-
----
-
 ## Install ArgoCD 
 
 ```bash
@@ -102,14 +79,32 @@ oc get installplan -n dp01-mgmt -o yaml | grep "name: in" | awk '{print$2}' | xa
 
 ---
 
-
 ## Install Tekton pipelines
 
 ```bash
 oc apply -f setup/tekton-operator-sub.yaml
 ```
 
+Manual Tekton install: 
+```bash
+kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.16.3/release.yaml)
+```
+
 ---
+
+## Create catalog sources
+
+```bash
+oc apply -f setup/catalog-sources.yaml
+```
+
+---
+
+## Create Datapower `dev` namespace 
+
+```bash
+oc apply -f setup/namespaces.yaml
+```
 
 ## Install DataPower operator
 
@@ -128,7 +123,9 @@ oc get installplan -n dp01-mgmt -o yaml | grep "name: in" | awk '{print$2}' | xa
     --namespace openshift-logging \
     --type merge \
     --patch '{"spec":{"approved":true}}'
+```
 
+```
 oc patch installplan install-xxxxx \
     --namespace openshift-logging \
     --type merge \
@@ -197,3 +194,6 @@ oc patch serviceaccount pipeline \
     --type merge \
     --patch '{"secrets":[{"name":"dp01-ssh-credentials"}]}'
 ```
+
+---
+
