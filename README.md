@@ -1,14 +1,19 @@
 ## Overview
 
-This tutorial demonstrates how to do CICD with DataPower using GitOps on Kubernetes. You will:
+This tutorial demonstrates how to do CICD with DataPower using GitOps on Kubernetes. 
 
-- Set up source and operational Git repositories for a virtual DataPower appliance.
-- Create a Kubernetes cluster and image registry, if required.
-- Install ArgoCD applications to manage cluster deployment of DataPower-related Kubernetes resources.
-- Run a Tekton pipleline to build, test, version and deliver the DataPower-related resources ready for deployment.
-- Gain experience with the IBM-supplied DataPower operator and container.
+In this tutorial, you will:
+
+1. Create a Kubernetes cluster and image registry, if required.
+2. Install ArgoCD applications to manage cluster deployment of DataPower-related Kubernetes resources.
+3. Create an operational repository to store DataPower resources that are deployed to the Kubernetes cluster.
+4. Create a source Git repository to store the configuration and development artefacts for a virtual DataPower appliance.
+5. Run a Tekton pipleline to build, test, version and deliver the DataPower-related resources ready for deployment.
+6. Gain experience with the IBM-supplied DataPower operator and container.
 
 At the end of this tutorial, you will have a solid foundation of GitOps and CICD for DataPower in a Kubernetes environment.
+
+---
 
 ## Introduction 
 
@@ -16,17 +21,19 @@ The following diagram shows a GitOps CICD pipeline for DataPower:
 
 ![diagram1](./docs/images/diagram1.drawio.png)
 
-Notice how: 
+Notice: 
 
-- The git repository `dp01-src` holds the source configuration for the DataPower `dp01`
-- This repository also holds the source for a multi-protocol gateway
-- A Tekton pipeline usese the source repository to build, package, test, version and deliver changes to the `dp01` component.
-- If the pipeline is successful, then the YAMLs that define `dp01` are stored in the operational repository `dp01-ops`. The container image for `dp01` is stored in an image registry.
-- Shortly after the changes are committed to the git repository, an ArgoCD application detects the updated YAMLs. It applies them to the cluster to update the running `dp01`
+- The git repository `dp01-src` holds the source configuration for the DataPower appliance `dp01`.
+- The `dp01-src` repository also holds the source for a multi-protocol gateway on `dp01`.
+- A Tekton pipeline uses the `dp01-src` repository to build, package, test, version and deliver resources that define the `dp01` DataPower appliance.
+- If the pipeline is successful, then the YAMLs that define `dp01` are stored in the operational repository `dp01-ops` and the container image for `dp01` is stored in an image registry.
+- Shortly after the changes are committed to the git repository, an ArgoCD application detects the updated YAMLs. It applies them to the cluster to update the running `dp01` DataPower appliance.
 
-This tutorial will walk you through the process of setting up this configuration"
-- Step 1: Follow the instructions in this README to set up your cluster, `dp01-ops` repository and ArgoCD. 
-- Step 2: Complete the tutorial by following [these instructions](https://github.com/dp-auto/dpxx-src#readme) to populate the `dp01-ops` repository with dp01 artefacts.  
+This tutorial will walk you through the process of setting up this configuration:
+- Step 1: Follow the instructions in this README to set up your cluster, ArgoCD and the `dp01-ops` repository.
+- Step 2: Follow [these instructions](https://github.com/dp-auto/dpxx-src#readme) to create the `dp01-src` respository, run a tekton pipeline to populate it, and interact with the new or updated DataPower appliance `dp01`.
+
+---
 
 ## Install Kubernetes
 
