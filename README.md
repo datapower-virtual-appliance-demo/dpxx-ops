@@ -176,11 +176,41 @@ See if you can understand each YAML node, referring to [subscriptions](https://o
 
 Let's find our install plan and approve it.
 
-oc get installplan -n dp01-mgmt -o yaml | grep "name: in" | awk '{print$2}' | \
-xarg oc patch installplan 
- --namespace openshift-logging \
+```bash
+oc get installplan -n openshift-operators | grep "openshift-gitops-operator" | awk '{print $1}' | \
+xargs oc patch installplan \
+ --namespace openshift-operators \
  --type merge \
  --patch '{"spec":{"approved":true}}'
+```
+
+which will approve the install plan
+
+```bash
+installplan.operators.coreos.com/install-xxxxx patched
+```
+
+where `install-xxxxx` is the name of the install plan.
+
+## Verify ArgoCD installation
+
+ArgoCD will now install; let's verify the installation has completed successfully by examining the ClusterServiceVersion (CSV) for ArgoCD. A CSV is created for each installation - it holds the exact versions of all
+
+```bash
+oc get clusterserviceversion -n openshift-gitops
+```
+
+```bash
+NAME                               DISPLAY                    VERSION   REPLACES                                          PHASE
+openshift-gitops-operator.v1.5.7   Red Hat OpenShift GitOps   1.5.7     openshift-gitops-operator.v1.5.6-0.1664915551.p   Succeeded
+```
+
+Feel free to explore this CSV with, replacing `x.y.z` with the installed version of ArgoCD.
+
+```bash
+oc describe csv openshift-gitops-operator.vx.y.z -n openshift-operators
+```
+
 ---
 
 ## Install Tekton pipelines
