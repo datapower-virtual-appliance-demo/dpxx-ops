@@ -2,7 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: dp01-webui
-  namespace: dp01-ns
+  namespace: dp01-dev
 spec:
   selector:
     app: dp01-webui
