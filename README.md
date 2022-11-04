@@ -130,7 +130,7 @@ As the turorial proceeds, we'll see how the contents of the `dp01-ops` repositor
 
 ---
 
-## Install ArgoCD 
+## Create ArgoCD subscription 
 
 Let's install ArgoCD to enable continuous deployment: 
 
@@ -140,13 +140,42 @@ Use the following command to create a subscription for ArgoCD:
 oc apply -f setup/argocd-operator-sub.yaml
 ```
 
-which will create a subscription for ArgoCD: HERE!!
+which will create a subscription for ArgoCD: 
 
 ```bash
 subscription.operators.coreos.com/openshift-gitops-operator created
 ```
 
-We need to manually approve the install plan
+This subscription enables the cluster to keep up-to-date with new version of ArgoCD. Each release has an [install plan](https://olm.operatorframework.io/docs/concepts/olm-architecture/) that is used to maintain it. In what might seem like a contradiction, our subscription creates an install plan that requires manual approval; we'll understand why a little later. 
+
+Explore the subscription using the following command: 
+
+```bash
+cat setup/argocd-operator-sub.yaml
+```
+
+which details the subscription.
+
+```yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: openshift-gitops-operator
+  namespace: openshift-operators
+spec:
+  channel: stable
+  installPlanApproval: Manual
+  name: openshift-gitops-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+```
+
+[Learn more about subscriptions](https://olm.operatorframework.io/docs/concepts/crds/subscription/). 
+
+## Approve ArgoCD install plan
+
+
+Let's find our install plan and approve it.
 
 oc get installplan -n dp01-mgmt -o yaml | grep "name: in" | awk '{print$2}' | \
 xarg oc patch installplan 
