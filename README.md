@@ -123,7 +123,7 @@ namespace/dp01-dev created
 
 We'll see how: 
 
-- the `dp01-mgmt` namespace is used to store generic Kubernetes resources catalog sources and operators.
+- the `dp01-mgmt` namespace is used to store generic Kubernetes resources relating to DataPower.
 - the `dp01-dev` namespace is used to store specific Kubernetes resources relating to `dp01`.
 
 As the turorial proceeds, we'll see how the contents of the `dp01-ops` repository **fully** defines the contents of all resources relating to our DataPower deployment. Moreover, we're going to set up the cluster such it is **automatically** updated whenever this `dp01-ops` repository changes. This concept is called **continuous deployemnt** and we'll use ArgoCD to acheive it.
@@ -194,7 +194,7 @@ where `install-xxxxx` is the name of the ArgoCD install plan.
 
 ## Verify ArgoCD installation
 
-ArgoCD will now install; let's verify the installation has completed successfully by examining the ClusterServiceVersion (CSV) for ArgoCD. A CSV is created for each installation - it holds the exact versions of all
+ArgoCD will now install; let's verify the installation has completed successfully by examining the ClusterServiceVersion (CSV) for ArgoCD. A CSV is created for each installation - it holds the exact versions of all dependent software and relevant RBAC permissions.
 
 ```bash
 oc get clusterserviceversion -n openshift-gitops
@@ -211,12 +211,141 @@ Feel free to explore this CSV with, replacing `x.y.z` with the installed version
 oc describe csv openshift-gitops-operator.vx.y.z -n openshift-operators
 ```
 
+## Add IBM catalog sources
+
+The final operator we need to add to the cluster is the DataPower operator. It is installed from a specific IBM [catalog source](https://olm.operatorframework.io/docs/concepts/crds/catalogsource/), so we first need to add the catalog source to the cluster.
+
+Issue the following command:
+
+```bash
+oc apply -f setup/catalog-sources.yaml
+```
+
+which will add the sources defined in this YAML to the cluster:
+
+```bash
+catalogsource.operators.coreos.com/ibm-operator-catalog created
+```
+
+Feel free to examine the catalog source YAML:
+
+```bash
+cat setup/catalog-sources.yaml
+```
+
+Notice how two catalog sources are added.
+
+---
+
+## Add DataPower operator group
+
+We are going to install the DataPower operator into its own namespace, `dp01-mgmt`. To allow it to access the `dp01-dev` namespace, we create an operator group.
+
+Issue the following command to create the operator group `dp-operator-group`:
+
+```bash
+oc apply -f setup/dp-operator-group.yaml
+```
+
+which you will see created.
+
+```bash
+operatorgroup.operators.coreos.com/dp-operator-group created
+```
+
+You can examine this operator group with the following command:
+
+```bash
+cat setup/dp-operator-group.yaml
+```
+
+which will show you the details of the operator group:
+
+```yaml
+```
+
+Notice how this operator can control the `dp01-dev` namespace, where we are going to initially deploy the `dp01` DataPower appliance.
+
+---
+
+## Install DataPower operator
+
+Now we've added these catalog sources, we can install the DataPower operator; we're familar with the process -- it's the same as ArgoCD.
+
+Issue the following command:
+
+```bash
+oc apply -f setup/dp-operator-sub.yaml
+```
+
+```bash
+subscription.operators.coreos.com/datapower-operator created
+```
+
+Explore the subscription using the following command: 
+
+```bash
+cat setup/dp-operator-sub.yaml
+```
+
+which details the subscription:
+
+```yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  labels:
+    operators.coreos.com/datapower-operator.dp01-ns: ''
+  name: datapower-operator
+  namespace: dp01-mgmt
+spec:
+  channel: v1.6
+  installPlanApproval: Manual
+  name: datapower-operator
+  source: ibm-operator-catalog
+  sourceNamespace: openshift-marketplace
+  startingCSV: datapower-operator.v1.6.3
+```
+
+Notice how this operator is installed in the `dp01-mgmt` namespace. Note also the use of `channel` and `startingCSV` to be precise about the exact version of the DataPower operator to be installed.
+
+## Approve and verify DataPower install plan
+
+Let's find our install plan and approve it.
+
+```bash
+oc get installplan -n dp01-mgmt | grep "datapower-operator" | awk '{print $1}' | \
+xargs oc patch installplan \
+ --namespace dp01-mgmt \
+ --type merge \
+ --patch '{"spec":{"approved":true}}'
+```
+
+which will approve the install plan:
+
+```bash
+installplan.operators.coreos.com/install-xxxxx patched
+```
+
+where `install-xxxxx` is the name of the DataPower install plan.
+
+Again, feel free to verify the DataPower installation with the following commands:
+
+```bash
+oc get clusterserviceversion -n dp01-mgmt
+```
+
+Replace `x.y.z` with the installed version of DataPower in the following command:
+
+```bash
+oc describe csv datapower-operator.vx.y.z -n openshift-operators
+```
+
 ---
 
 ## Install Tekton pipelines
 
-Tekton pipelines complement ArgoCD by populating the operational repository `dp01-ops` using the DataPower configuration and development artefacts stored in `dp01-src`. Once populated by Tekton, ArgoCD will synchronize these artefacts with the cluster to ensure the cluster is running the most up-tp-date version of `dp01`. Let's install Tekton.
-
+Our final task is to install Tekton.  With it, we can create pipelines that populate the operational repository `dp01-ops` using the DataPower configuration and development artefacts stored in `dp01-src`. Once populated by Tekton, ArgoCD will then synchronize these artefacts with the cluster to ensure the cluster is running the most up-tp-date version of `dp01`. 
 
 Issue the following command to create a subscription for Tekton:
 
@@ -294,156 +423,41 @@ oc describe csv openshift-pipelines-operator-rh.vx.y.z -n openshift-operators
 
 ---
 
-## Add IBM catalog sources
-
-The final operator we need to add to the cluster is the DataPower operator. It is installed from a specific IBM [catalog source](https://olm.operatorframework.io/docs/concepts/crds/catalogsource/), so we first need to add the catalog source to the cluster.
-
-Issue the following command:
-
-```bash
-oc apply -f setup/catalog-sources.yaml
-```
-
-which will add the sources defined in this YAML to the cluster:
-
-```bash
-catalogsource.operators.coreos.com/ibm-operator-catalog created
-```
-
-Feel free to examine the catalog source YAML:
-
-```bash
-cat setup/catalog-sources.yaml
-```
-
-Notice how two catalog sources are added.
-
-## Install DataPower operator
-
-Now we've added these catalog sources, we can install the DataPower operator; we're familar with the process -- it's the same as ArgoCD and Tekton.
-
-Issue the following command:
-
-```bash
-oc apply -f setup/dp-operator-sub.yaml
-```
-
-```bash
-subscription.operators.coreos.com/datapower-operator created
-```
-
-Explore the subscription using the following command: 
-
-```bash
-cat setup/dp-operator-sub.yaml
-```
-
-which details the subscription:
-
-```yaml
-apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  labels:
-    operators.coreos.com/datapower-operator.dp01-ns: ''
-  name: datapower-operator
-  namespace: dp01-mgmt
-spec:
-  channel: v1.6
-  installPlanApproval: Manual
-  name: datapower-operator
-  source: ibm-operator-catalog
-  sourceNamespace: openshift-marketplace
-  startingCSV: datapower-operator.v1.6.3
-```
-
-Notice how this operator is installed in the `dp01-mgmt` namespace. Note also the use of `channel` and `startingCSV` to be precise about the exact version of the DataPower operator to be installed.
-
-## Approve and verify DataPower install plan
-
-Let's find our install plan and approve it.
-
-```bash
-oc get installplan -n dp01-mgmt | grep "datapower-operator" | awk '{print $1}' | \
-xargs oc patch installplan \
- --namespace dp01-mgmt \
- --type merge \
- --patch '{"spec":{"approved":true}}'
-```
-
-which will approve the install plan:
-
-```bash
-installplan.operators.coreos.com/install-xxxxx patched
-```
-
-where `install-xxxxx` is the name of the DataPower install plan.
-
-Again, feel free to verify the DataPower installation with the following commands:
-
-```bash
-oc get clusterserviceversion -n dp01-mgmt
-```
-
-Replace `x.y.z` with the installed version of DataPower in the following command:
-
-```bash
-oc describe csv datapower-operator.vx.y.z -n openshift-operators
-```
-
----
-
-
-```bash
-oc get installplan -n openshift-operators | grep "openshift-pipelines-operator" | awk '{print $1}' | \
-xargs oc patch installplan \
- --namespace openshift-operators \
- --type merge \
- --patch '{"spec":{"approved":true}}'
-```
-
----
-
-## Manually approve in OCP UI
-
-Fix this with oc patch
-
-```bash
-oc get installplan -n dp01-mgmt -o yaml | grep "name: in" | awk '{print$2}' | xarg oc patch installplan install-xxxxx \
-    --namespace openshift-logging \
-    --type merge \
-    --patch '{"spec":{"approved":true}}'
-```
-
-```
-oc patch installplan install-xxxxx \
-    --namespace openshift-logging \
-    --type merge \
-    --patch '{"spec":{"approved":true}}'
-```
-
----
-
 ## Generate ssh keys for GitHub access
+
+To allow Tekton to access GitHub, specifically to create YAMLs in the `dp01-ops` repository, we need to set up appropriate SSH keys for access.
+
+Issue the following command to create an SSH key pair:
 
 ```bash
 ssh-keygen -t rsa -b 4096 -C "your_email@example.com" -f ./.ssh/id_rsa -q -N ""
 ```
 
+Issue the following command to create a `known_hosts` file for SSH access:
+
 ```bash
 ssh-keyscan -t rsa github.com | tee ./.ssh/github-key-temp | ssh-keygen -lf - && cat ./.ssh/github-key-temp >> ./.ssh/known_hosts
 ```
 
-```bash
-oc create secret generic dp01-ssh-credentials -n dp01-dev --from-file=id_rsa=./.ssh/id_rsa --from-file=known_hosts=./.ssh/known_hosts --from-file=./.ssh/config --dry-run=client -o=yaml
-```
+Issue the following command to create a secret containing the  SSH private key and `known_hosts` file:
 
 ```bash
 oc create secret generic dp01-ssh-credentials -n dp01-dev --from-file=id_rsa=./.ssh/id_rsa --from-file=known_hosts=./.ssh/known_hosts --from-file=./.ssh/config --dry-run=client -o yaml > dp-git-credentials.yaml
 ```
 
+Issue the following command to create this secret in the cluster:
+
 ```bash
 oc apply -f dp-git-credentials.yaml
+```
+
+Finally, add this secret to the `pipeline` service account to allow it to use `dp-1-ssh-credentials` secret to access GitHub.
+
+```bash
+oc patch serviceaccount pipeline \
+    --namespace dp01-dev \
+    --type merge \
+    --patch '{"secrets":[{"name":"dp01-ssh-credentials"}]}'
 ```
 
 ---
@@ -473,17 +487,6 @@ Click on `New SSH Key`
 ![diagram3](./docs/images/diagram3.png)
 
 * Hit `Add SSH key` button
-
----
-
-## Patch `pipeline` serviceaccount
-
-```bash
-oc patch serviceaccount pipeline \
-    --namespace dp01-dev \
-    --type merge \
-    --patch '{"secrets":[{"name":"dp01-ssh-credentials"}]}'
-```
 
 ---
 
