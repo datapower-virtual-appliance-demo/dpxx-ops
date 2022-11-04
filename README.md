@@ -154,7 +154,7 @@ Explore the subscription using the following command:
 cat setup/argocd-operator-sub.yaml
 ```
 
-which details the subscription.
+which details the subscription:
 
 ```yaml
 apiVersion: operators.coreos.com/v1alpha1
@@ -190,7 +190,7 @@ which will approve the install plan
 installplan.operators.coreos.com/install-xxxxx patched
 ```
 
-where `install-xxxxx` is the name of the install plan.
+where `install-xxxxx` is the name of the ArgoCD install plan.
 
 ## Verify ArgoCD installation
 
@@ -205,7 +205,7 @@ NAME                               DISPLAY                    VERSION   REPLACES
 openshift-gitops-operator.v1.5.7   Red Hat OpenShift GitOps   1.5.7     openshift-gitops-operator.v1.5.6-0.1664915551.p   Succeeded
 ```
 
-Feel free to explore this CSV with, replacing `x.y.z` with the installed version of ArgoCD.
+Feel free to explore this CSV with, replacing `x.y.z` with the installed version of ArgoCD:
 
 ```bash
 oc describe csv openshift-gitops-operator.vx.y.z -n openshift-operators
@@ -215,13 +215,81 @@ oc describe csv openshift-gitops-operator.vx.y.z -n openshift-operators
 
 ## Install Tekton pipelines
 
+Tekton pipelines complement ArgoCD by populating the operational repository `dp01-ops` using the DataPower configuration and development artefacts stored in `dp01-src`. Once populated by Tekton, ArgoCD will synchronize these artefacts with the cluster to ensure the cluster is running the most up-tp-date version of `dp01`. Let's install Tekton.
+
+
+Issue the following command to create a subscription for Tekton:
+
 ```bash
 oc apply -f setup/tekton-operator-sub.yaml
+```
+
+which will create a subscription:
+
+```bash
+subscription.operators.coreos.com/openshift-pipelines-operator created
+```
+
+Again, this subscription enables the cluster to keep up-to-date with new version of Tekton. 
+
+Explore the subscription using the following command: 
+
+```bash
+cat setup/tekton-operator-sub.yaml
+```
+
+which details the subscription:
+
+```yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: openshift-pipelines-operator
+  namespace: openshift-operators
+spec:
+  channel:  stable
+  installPlanApproval: Manual
+  name: openshift-pipelines-operator-rh
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
 ```
 
 Manual Tekton install: 
 ```bash
 kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.16.3/release.yaml)
+```
+---
+
+## Approve and Verify Tekton install plan
+
+Let's find our install plan and approve it.
+
+```bash
+oc get installplan -n openshift-operators | grep "openshift-pipelines-operator" | awk '{print $1}' | \
+xargs oc patch installplan \
+ --namespace openshift-operators \
+ --type merge \
+ --patch '{"spec":{"approved":true}}'
+```
+
+which will approve the install plan
+
+```bash
+installplan.operators.coreos.com/install-xxxxx patched
+```
+
+where `install-xxxxx` is the name of the Tekton install plan.
+
+Again, feel free to verify the Tekton installation with the following commands:
+
+```bash
+oc get clusterserviceversion -n openshift-pipelines
+```
+
+(replacing `x.y.z` with the installed version of Tekton)
+
+```bash
+oc describe csv openshift-pipelines-operator.vx.y.z -n openshift-operators
 ```
 
 ---
