@@ -2,7 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: dp01-booking-service
-  namespace: dp01-ns
+  namespace: dp01-dev
 spec:
   selector:
     app.kubernetes.io/instance: dp01-ns-dp01
