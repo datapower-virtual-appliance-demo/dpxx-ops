@@ -170,10 +170,9 @@ spec:
   sourceNamespace: openshift-marketplace
 ```
 
-[Learn more about subscriptions](https://olm.operatorframework.io/docs/concepts/crds/subscription/). 
+See if you can understand each YAML node, referring to [subscriptions](https://olm.operatorframework.io/docs/concepts/crds/subscription/) if you need to learn more. 
 
 ## Approve ArgoCD install plan
-
 
 Let's find our install plan and approve it.
 
@@ -182,7 +181,6 @@ xarg oc patch installplan
  --namespace openshift-logging \
  --type merge \
  --patch '{"spec":{"approved":true}}'
-
 ---
 
 ## Install Tekton pipelines
