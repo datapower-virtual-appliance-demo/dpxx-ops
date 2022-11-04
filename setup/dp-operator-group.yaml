@@ -1,0 +1,10 @@
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: dp-operator-group
+  namespace: dp01-mgmt
+spec:
+  targetNamespaces:
+  - dp01-mgmt
+  - dp01-dev
+  
