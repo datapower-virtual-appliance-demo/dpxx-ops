@@ -490,3 +490,26 @@ Click on `New SSH Key`
 
 ---
 
+## Create an ArgoCD application to manage these operators
+
+
+```bash
+oc get route openshift-gitops-server -n openshift-gitops -o jsonpath='{"https://"}{.spec.host}{"\n"}' 
+```
+
+which will return a URL similar to this:
+
+```bash
+https://openshift-gitops-server-openshift-gitops.vpc-mq-cluster1-d02cf90349a0fe46c9804e3ab1fe2643-0000.eu-gb.containers.appdomain.cloud
+```
+
+Paste your URL into a browser:
+
+```bash
+oc extract secret/openshift-gitops-cluster -n openshift-gitops --keys="admin.password" --to=-
+```
+
+Login to ArgoCD with `admin` and `password`.
+
+---
+
