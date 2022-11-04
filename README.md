@@ -260,7 +260,7 @@ kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previou
 ```
 ---
 
-## Approve and Verify Tekton install plan
+## Approve and verify Tekton install plan
 
 Let's find our install plan and approve it.
 
@@ -289,21 +289,117 @@ oc get clusterserviceversion -n openshift-pipelines
 (replacing `x.y.z` with the installed version of Tekton)
 
 ```bash
-oc describe csv openshift-pipelines-operator.vx.y.z -n openshift-operators
+oc describe csv openshift-pipelines-operator-rh.vx.y.z -n openshift-operators
 ```
 
 ---
 
-## Create catalog sources
+## Add IBM catalog sources
+
+The final operator we need to add to the cluster is the DataPower operator. It is installed from a specific IBM [catalog source](https://olm.operatorframework.io/docs/concepts/crds/catalogsource/), so we first need to add the catalog source to the cluster.
+
+Issue the following command:
 
 ```bash
 oc apply -f setup/catalog-sources.yaml
 ```
 
+which will add the sources defined in this YAML to the cluster:
+
+```bash
+catalogsource.operators.coreos.com/ibm-operator-catalog created
+```
+
+Feel free to examine the catalog source YAML:
+
+```bash
+cat setup/catalog-sources.yaml
+```
+
+Notice how two catalog sources are added.
+
 ## Install DataPower operator
+
+Now we've added these catalog sources, we can install the DataPower operator; we're familar with the process -- it's the same as ArgoCD and Tekton.
+
+Issue the following command:
 
 ```bash
 oc apply -f setup/dp-operator-sub.yaml
+```
+
+```bash
+subscription.operators.coreos.com/datapower-operator created
+```
+
+Explore the subscription using the following command: 
+
+```bash
+cat setup/dp-operator-sub.yaml
+```
+
+which details the subscription:
+
+```yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  labels:
+    operators.coreos.com/datapower-operator.dp01-ns: ''
+  name: datapower-operator
+  namespace: dp01-mgmt
+spec:
+  channel: v1.6
+  installPlanApproval: Manual
+  name: datapower-operator
+  source: ibm-operator-catalog
+  sourceNamespace: openshift-marketplace
+  startingCSV: datapower-operator.v1.6.3
+```
+
+Notice how this operator is installed in the `dp01-mgmt` namespace. Note also the use of `channel` and `startingCSV` to be precise about the exact version of the DataPower operator to be installed.
+
+## Approve and verify DataPower install plan
+
+Let's find our install plan and approve it.
+
+```bash
+oc get installplan -n dp01-mgmt | grep "datapower-operator" | awk '{print $1}' | \
+xargs oc patch installplan \
+ --namespace dp01-mgmt \
+ --type merge \
+ --patch '{"spec":{"approved":true}}'
+```
+
+which will approve the install plan:
+
+```bash
+installplan.operators.coreos.com/install-xxxxx patched
+```
+
+where `install-xxxxx` is the name of the DataPower install plan.
+
+Again, feel free to verify the DataPower installation with the following commands:
+
+```bash
+oc get clusterserviceversion -n dp01-mgmt
+```
+
+Replace `x.y.z` with the installed version of DataPower in the following command:
+
+```bash
+oc describe csv datapower-operator.vx.y.z -n openshift-operators
+```
+
+---
+
+
+```bash
+oc get installplan -n openshift-operators | grep "openshift-pipelines-operator" | awk '{print $1}' | \
+xargs oc patch installplan \
+ --namespace openshift-operators \
+ --type merge \
+ --patch '{"spec":{"approved":true}}'
 ```
 
 ---
