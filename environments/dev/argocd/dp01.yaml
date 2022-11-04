@@ -8,12 +8,12 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: dp01-ns
+    namespace: dp01-dev
     server: https://kubernetes.default.svc
-  project: applications
+  project: default
   source:
     path: environments/dev/dp01/
-    repoURL: https://github.com/dp-auto/dp-auto-ops.git
+    repoURL: https://github.com/odowdaibm/dp01-ops.git
     targetRevision: main
   syncPolicy:
     automated:
