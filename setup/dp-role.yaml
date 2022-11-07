@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: dp01-dev
+  name: dp-deployer
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["secrets", "services"]
+  verbs: ["*"]
+- apiGroups: ["datapower.ibm.com"] # datapower.ibm.com API group
+  resources: ["datapowerservices"]
+  verbs: ["*"]
+- apiGroups: ["networking.k8s.io"] # Kubernetes networking group
+  resources: ["ingresses"]
+  verbs: ["*"]
