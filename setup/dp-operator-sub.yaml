@@ -4,11 +4,11 @@ metadata:
   labels:
     operators.coreos.com/datapower-operator.dp01-ns: ''
   name: datapower-operator
-  namespace: dp01-mgmt
+  namespace: openshift-operators
 spec:
   channel: v1.6
   installPlanApproval: Manual
   name: datapower-operator
   source: ibm-operator-catalog
   sourceNamespace: openshift-marketplace
-  startingCSV: datapower-operator.v1.6.3
+  startingCSV: datapower-operator.v1.6.4
