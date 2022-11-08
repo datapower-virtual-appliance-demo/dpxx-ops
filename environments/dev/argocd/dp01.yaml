@@ -2,6 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: dp01-argo
+  namespace: openshift-gitops
   annotations:
     argocd.argoproj.io/sync-wave: "100"
   finalizers:
@@ -13,7 +14,7 @@ spec:
   project: default
   source:
     path: environments/dev/dp01/
-    repoURL: https://github.com/odowdaibm/dp01-ops.git
+    repoURL: https://github.com/dp-auto/dp01-ops.git
     targetRevision: main
   syncPolicy:
     automated:
