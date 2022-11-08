@@ -511,5 +511,10 @@ oc extract secret/openshift-gitops-cluster -n openshift-gitops --keys="admin.pas
 
 Login to ArgoCD with `admin` and `password`.
 
+You will see the following screen:
+
+![diagram4](./docs/images/diagram4.png)
+
+
 ---
 
