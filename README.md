@@ -499,15 +499,79 @@ The Tekton pipeline now has access to your GitHub.
 
 ---
 
-## Create an ArgoCD application to manage dp01
+## An ArgoCD application to manage dp01
 
 Finally, we're going to create an ArgoCD application to manage `dp01`.
 
+```bash
+cat environments/dev/argocd/dp01.yaml
+```
 
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dp01-argo
+  namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/sync-wave: "100"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: dp01-dev
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: environments/dev/dp01/
+    repoURL: https://github.com/dp-auto/dp01-ops.git
+    targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - Replace=true
+```
+
+In your GitHub repository, replace `dp-auto` with your Git user id and deploy it to the cluster:
+(**Add push commands**)
+
+Notice how the this Argo application will be monitoring GitHub for resources to deploy to the cluster:
+
+```yaml
+  source:
+    path: environments/dev/dp01/
+    repoURL: https://github.com/odowdaibm/dp01-ops.git
+    targetRevision: main
+```
+
+See how:
+  - `repoURL: https://github.com/odowdaibm/dp01-ops.git` identifies the repository where the YAMLs are located
+  - `targetRevision: main` identifies the branch within the repository
+  - `path: environments/dev/dp01/` identifies the folder within the repository
+
+## Deploy dp01-argo to the cluster
+
+Let's deploy this ArgoCD application to the cluster:
+
+```bash
+oc apply -f environments/dev/argocd/dp01.yaml
+```
+
+which will complete with:
+
+```bash
+application.argoproj.io/dp01-argo created
+```
+
+We now have an ArgoCD application monitoring our repository.
 
 ## View dp01-argo in ArgoCD UI
 
-Let's look at...
+We can use the ArgoCD UI to look at the `dp01-argo` application and the resources it is managing:
+
+Issue the following command to identify the URL for the ArgoCD login page:
 
 ```bash
 oc get route openshift-gitops-server -n openshift-gitops -o jsonpath='{"https://"}{.spec.host}{"\n"}' 
@@ -519,7 +583,7 @@ which will return a URL similar to this:
 https://openshift-gitops-server-openshift-gitops.vpc-mq-cluster1-d02cf90349a0fe46c9804e3ab1fe2643-0000.eu-gb.containers.appdomain.cloud
 ```
 
-Paste your URL into a browser:
+Issue the following command to determin the ArgoCD `password` for the `admin` user: 
 
 ```bash
 oc extract secret/openshift-gitops-cluster -n openshift-gitops --keys="admin.password" --to=-
@@ -530,6 +594,7 @@ Login to ArgoCD with `admin` and `password`.
 You will see the following screen:
 
 ![diagram4](./docs/images/diagram4.png)
+
 
 
 ---
