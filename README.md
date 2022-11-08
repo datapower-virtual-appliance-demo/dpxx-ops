@@ -90,19 +90,12 @@ which shows the following YAMLs.
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: dp01-mgmt
-  labels:
-    name: dp01-mgmt
----
-kind: Namespace
-apiVersion: v1
-metadata:
   name: dp01-dev
   labels:
     name: dp01-dev
 ```
 
-These YAMLs will define two namespaces `dp01-mgmt` and `dp01-dev` which will be used to store Kubernetes resources for this tutorial. We'll explore the respository in more detail as we proceed through the tutorial.
+These YAMLs will define the `dp01-dev` namespace which will be used to store Kubernetes resources for this tutorial. We'll explore the contents of this namespace throughout the tutorial.
 
 ---
 
@@ -211,6 +204,15 @@ Feel free to explore this CSV with, replacing `x.y.z` with the installed version
 oc describe csv openshift-gitops-operator.vx.y.z -n openshift-operators
 ```
 
+## Minor modifications to ArgoCD
+
+```bash
+oc patch argocd openshift-gitops  \
+ --namespace openshift-gitops \
+ --type merge \
+ --patch '{"spec":{"applicationInstanceLabelKey":"argocd.argoproj.io/instance"}}'
+```
+
 ## Add IBM catalog sources
 
 The final operator we need to add to the cluster is the DataPower operator. It is installed from a specific IBM [catalog source](https://olm.operatorframework.io/docs/concepts/crds/catalogsource/), so we first need to add the catalog source to the cluster.
@@ -297,7 +299,7 @@ metadata:
   labels:
     operators.coreos.com/datapower-operator.dp01-ns: ''
   name: datapower-operator
-  namespace: dp01-mgmt
+  namespace: openshift-operators
 spec:
   channel: v1.6
   installPlanApproval: Manual
@@ -314,9 +316,9 @@ Notice how this operator is installed in the `dp01-mgmt` namespace. Note also th
 Let's find our install plan and approve it.
 
 ```bash
-oc get installplan -n dp01-mgmt | grep "datapower-operator" | awk '{print $1}' | \
+oc get installplan -n openshift-operators | grep "datapower-operator" | awk '{print $1}' | \
 xargs oc patch installplan \
- --namespace dp01-mgmt \
+ --namespace openshift-operators \
  --type merge \
  --patch '{"spec":{"approved":true}}'
 ```
@@ -464,22 +466,25 @@ oc patch serviceaccount pipeline \
 
 ## Copy ssh credential into Github
 
-Need to add ssh public key to GitHub to authorise access:
+To allow the Tekton pipeline to push the generated DataPower Kubernetes resource YAMLs to the `dp01-ops` repository, we need to add the public key we've just generated to GitHub. 
+
+Use the following link in a browser to access the GitHub user interface to add an SSH public key:
 
 ```bash
 https://github.com/settings/keys
 ```
 
+You'll see the following page:
+
 ![diagram2](./docs/images/diagram2.png)
 
-
-Copy public key to clipboard
+Copy your public key to the clipboard:
 
 ```bash
 pbcopy < ./.ssh/id_rsa.pub
 ```
 
-Click on `New SSH Key`
+Click on `New SSH Key`, and complete the following details:
 
 * Add name `dp01 SSH key`
 * Paste key into box
@@ -488,10 +493,21 @@ Click on `New SSH Key`
 
 * Hit `Add SSH key` button
 
+The Tekton pipeline now has access to your GitHub. 
+
+*(Might be better to use access tokens, to limit scope... consider as change.)*
+
 ---
 
-## Create an ArgoCD application to manage these operators
+## Create an ArgoCD application to manage dp01
 
+Finally, we're going to create an ArgoCD application to manage `dp01`.
+
+
+
+## View dp01-argo in ArgoCD UI
+
+Let's look at...
 
 ```bash
 oc get route openshift-gitops-server -n openshift-gitops -o jsonpath='{"https://"}{.spec.host}{"\n"}' 
