@@ -595,7 +595,17 @@ You will see the following screen:
 
 ![diagram4](./docs/images/diagram4.png)
 
+The ArgoCD application `dp01-argo` is monitoring the `https://github.com/ODOWDAIBM/dp01-ops` repository.
 
+We will now run the Tekton pipeline to populate this repository.
+
+---
+
+## Congratulations
+
+You've set up your cluster for DataPower.  Let's run a pipeline to populate the repository.  
+
+Continue [here](https://github.com/dp-auto/dpxx-src#readme): 
 
 ---
 
