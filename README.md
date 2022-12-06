@@ -252,37 +252,6 @@ Notice how two catalog sources are added.
 
 ---
 
-## Add DataPower operator group
-
-We are going to install the DataPower operator into its own namespace, `dp01-mgmt`. To allow it to access the `dp01-dev` namespace, we create an operator group.
-
-Issue the following command to create the operator group `dp-operator-group`:
-
-```bash
-oc apply -f setup/dp-operator-group.yaml
-```
-
-which you will see created.
-
-```bash
-operatorgroup.operators.coreos.com/dp-operator-group created
-```
-
-You can examine this operator group with the following command:
-
-```bash
-cat setup/dp-operator-group.yaml
-```
-
-which will show you the details of the operator group:
-
-```yaml
-```
-
-Notice how this operator can control the `dp01-dev` namespace, where we are going to initially deploy the `dp01` DataPower appliance.
-
----
-
 ## Install DataPower operator
 
 Now we've added these catalog sources, we can install the DataPower operator; we're familar with the process -- it's the same as ArgoCD.
