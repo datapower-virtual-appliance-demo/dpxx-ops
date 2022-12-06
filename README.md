@@ -107,10 +107,9 @@ Let's use this YAML to define two namespaces in our cluster:
 oc apply -f setup/namespaces.yaml
 ```
 
-which will create the `dp01-mgmt` and `dp01-dev` namespaces in the cluster.
+which will create the `dp01-dev` namespace in the cluster.
 
 ```bash
-namespace/dp01-mgmt created
 namespace/dp01-dev created
 ```
 
