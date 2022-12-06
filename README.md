@@ -30,8 +30,8 @@ Notice:
 - Shortly after the changes are committed to the git repository, an ArgoCD application detects the updated YAMLs. It applies them to the cluster to update the running `dp01` DataPower appliance.
 
 This tutorial will walk you through the process of setting up this configuration:
-- Step 1: Follow the instructions in this README to set up your cluster, ArgoCD and the `dp01-ops` repository.
-- Step 2: Follow [these instructions](https://github.com/dp-auto/dpxx-src#readme) to create the `dp01-src` respository, run a tekton pipeline to populate it, and interact with the new or updated DataPower appliance `dp01`.
+- Step 1: Follow the instructions in this README to set up your cluster, ArgoCD and the `dp01-ops` repository, ArgoCD and Tekton. Continue to step 2.
+- Step 2: Continue with [these instructions](https://github.com/dp-auto/dpxx-src#readme) to create the `dp01-src` respository, run a tekton pipeline to populate it, and interact with the new or updated DataPower appliance `dp01`.
 
 ---
 
