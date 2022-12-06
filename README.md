@@ -115,7 +115,6 @@ namespace/dp01-dev created
 
 We'll see how: 
 
-- the `dp01-mgmt` namespace is used to store generic Kubernetes resources relating to DataPower.
 - the `dp01-dev` namespace is used to store specific Kubernetes resources relating to `dp01`.
 
 As the turorial proceeds, we'll see how the contents of the `dp01-ops` repository **fully** defines the contents of all resources relating to our DataPower deployment. Moreover, we're going to set up the cluster such it is **automatically** updated whenever this `dp01-ops` repository changes. This concept is called **continuous deployemnt** and we'll use ArgoCD to acheive it.
