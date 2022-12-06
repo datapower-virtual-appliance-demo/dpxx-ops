@@ -420,7 +420,7 @@ ssh-keygen -t rsa -b 4096 -C "your_email@example.com" -f ./.ssh/id_rsa -q -N ""
 Issue the following command to create a `known_hosts` file for SSH access:
 
 ```bash
-ssh-keyscan -t rsa github.com | tee ./.ssh/github-key-temp | ssh-keygen -lf - && cat ./.ssh/github-key-temp >> ./.ssh/known_hosts
+ssh-keyscan -t rsa github.com | tee ./.ssh/github-key-temp | cat ./.ssh/github-key-temp >> ./.ssh/known_hosts
 ```
 
 Issue the following command to create a secret containing the  SSH private key and `known_hosts` file:
