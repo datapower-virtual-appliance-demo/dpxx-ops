@@ -123,12 +123,14 @@ oc apply -f setup/namespaces.yaml
 which will create the `dp01-dev` namespace in the cluster.
 
 ```bash
+namespace/dp01-ci created
 namespace/dp01-dev created
 ```
 
 We'll see how: 
 
-- the `dp01-dev` namespace is used to store specific Kubernetes resources relating to `dp01`.
+- the `dp01-ci` namespace is used to store specific Kubernetes resources to build, package, version and test `dp01`.
+- the `dp01-dev` namespace is used to store specific Kubernetes resources relating to running `dp01`.
 
 As the turorial proceeds, we'll see how the contents of the `dp01-ops` repository **fully** defines the contents of all resources relating to our DataPower deployment. Moreover, we're going to set up the cluster such it is **automatically** updated whenever this `dp01-ops` repository changes. This concept is called **continuous deployemnt** and we'll use ArgoCD to acheive it.
 
