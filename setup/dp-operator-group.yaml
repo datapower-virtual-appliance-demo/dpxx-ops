@@ -5,6 +5,5 @@ metadata:
   namespace: dp01-mgmt
 spec:
   targetNamespaces:
-  - dp01-mgmt
   - dp01-dev
-  
+ 
