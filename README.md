@@ -37,7 +37,7 @@ This tutorial will walk you through the process of setting up this configuration
 
 ## Install Kubernetes
 
-Cover Minikube OCP options -->links
+Requires Openshift. TBD for Minikube
 
 ---
 
