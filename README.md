@@ -90,6 +90,13 @@ which shows the following YAMLs.
 kind: Namespace
 apiVersion: v1
 metadata:
+  name: dp01-ci
+  labels:
+    name: dp01-ci
+---
+kind: Namespace
+apiVersion: v1
+metadata:
   name: dp01-dev
   labels:
     name: dp01-dev
