@@ -39,6 +39,12 @@ This tutorial will walk you through the process of setting up this configuration
 
 Requires Openshift. TBD for Minikube
 
+Login to cluster:
+
+```bash
+oc login --token=xxx --server=https:xxx
+```
+
 ---
 
 ## Fork repository
