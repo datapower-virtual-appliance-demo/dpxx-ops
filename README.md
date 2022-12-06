@@ -291,7 +291,7 @@ spec:
   startingCSV: datapower-operator.v1.6.3
 ```
 
-Notice how this operator is installed in the `dp01-mgmt` namespace. Note also the use of `channel` and `startingCSV` to be precise about the exact version of the DataPower operator to be installed.
+Notice how this operator is installed in the `openshift-operators` namespace. Note also the use of `channel` and `startingCSV` to be precise about the exact version of the DataPower operator to be installed.
 
 ## Approve and verify DataPower install plan
 
@@ -316,7 +316,7 @@ where `install-xxxxx` is the name of the DataPower install plan.
 Again, feel free to verify the DataPower installation with the following commands:
 
 ```bash
-oc get clusterserviceversion -n dp01-mgmt
+oc get clusterserviceversion -n openshift-operators
 ```
 
 Replace `x.y.z` with the installed version of DataPower in the following command:
