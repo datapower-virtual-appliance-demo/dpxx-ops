@@ -47,6 +47,40 @@ oc login --token=xxx --server=https:xxx
 
 ---
 
+## Create a GitHub organization for your repositories
+
+This tutorial requires you to create 
+
+Click on the following URL [https://github.com/settings/organizations](https://github.com/settings/organizations) to create a new organization:
+
+![diagram6](./docs/images/diagram6.png)
+
+Click on `New organization`
+
+![diagram7](./docs/images/diagram7.png)
+
+Click on `Create a free organization`
+
+
+
+Click on `Next`
+
+## Set up environemnt
+
+We're going to use 
+
+```bash
+export GITORG=dporg-<your GitHub user name>
+```
+
+for example
+
+```
+export GITORG=dporg-odowdaibm
+```
+
+---
+
 ## Fork repository
 [Fork this repository](https://github.com/dp-auto/dpxx-ops/generate) from a `Template`. 
   - In the `Repsoitory name` field, specify `dp01-ops`
