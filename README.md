@@ -61,9 +61,17 @@ Click on `New organization`
 
 Click on `Create a free organization`
 
-
+![diagram8](./docs/images/diagram8.png)
 
 Click on `Next`
+
+Your organization has been created, and we will it to host the `dp01-src` and `dp01-ops` respositories in this tutorial.
+
+Navigate to:
+
+```bash
+https://github.com/orgs/dporg-odowdaibm/repositories
+```
 
 ## Set up environemnt
 
