@@ -1,57 +1,102 @@
 ## Overview
 
-This tutorial demonstrates how to do CICD with DataPower using GitOps on Kubernetes. 
+This tutorial demonstrates a platform engineering approach for DataPower
+development and deployment. It demonstrates continuous integration, continuous
+deployment, GitOps, Infrastructure as Code and DevOps by using containers,
+Kubernetes and a set of popular cloud native tools.
 
 In this tutorial, you will:
 
 1. Create a Kubernetes cluster and image registry, if required.
-2. Install ArgoCD applications to manage cluster deployment of DataPower-related Kubernetes resources.
-3. Create an operational repository to store DataPower resources that are deployed to the Kubernetes cluster.
-4. Create a source Git repository to store the configuration and development artefacts for a virtual DataPower appliance.
-5. Run a Tekton pipleline to build, test, version and deliver the DataPower-related resources ready for deployment.
+2. Create an operational repository to store DataPower resources that are
+   deployed to the Kubernetes cluster.
+3. Install ArgoCD to manage the continuous deployment of DataPower-related
+   resources to the cluster.
+4. Create a source Git repository for DataPower development artifacts for a
+   virtual DataPower appliance.
+5. Install Tekton to provide continuous integration of the source DataPower
+   artifacts. These pipeline ensures that all changes are successful built,
+   packaged, versioned and tested before they are delivered into an operational
+   repository, read for deployment.
 6. Gain experience with the IBM-supplied DataPower operator and container.
 
-At the end of this tutorial, you will have a solid foundation of GitOps and CICD for DataPower in a Kubernetes environment.
+You will gain a practical foundation of Platform Engineering knowledge and
+experience using GitOps, DevOps, CICD for DataPower in a Kubernetes environment.
 
 ---
 
-## Introduction 
+## Introduction
 
-The following diagram shows a GitOps CICD pipeline for DataPower:
+The following diagram shows a CICD pipeline for DataPower:
 
 ![diagram1](./docs/images/diagram1.drawio.png)
 
-Notice: 
+Notice:
 
-- The git repository `dp01-src` holds the source configuration for the DataPower appliance `dp01`.
-- The `dp01-src` repository also holds the source for a multi-protocol gateway on `dp01`.
-- A Tekton pipeline uses the `dp01-src` repository to build, package, test, version and deliver resources that define the `dp01` DataPower appliance.
-- If the pipeline is successful, then the YAMLs that define `dp01` are stored in the operational repository `dp01-ops` and the container image for `dp01` is stored in an image registry.
-- Shortly after the changes are committed to the git repository, an ArgoCD application detects the updated YAMLs. It applies them to the cluster to update the running `dp01` DataPower appliance.
+- The git repository `dp01-src` holds the source development artifacts for a
+  virtual DataPower appliance `dp01`.
+- A Tekton pipeline uses the `dp01-src` repository to build, package, test,
+  version and deliver resources that define the `dp01` DataPower appliance.
+- If the pipeline is successful, then the YAMLs that define `dp01` are stored in
+  the operational repository `dp01-ops` and the container image for `dp01` is
+  stored in an image registry.
+- Shortly after the changes are committed to the git repository, an ArgoCD
+  application detects the updated YAMLs. It applies them to the cluster to create or
+  update a running `dp01` DataPower virtual appliance.
 
-This tutorial will walk you through the process of setting up this configuration:
-- Step 1: Follow the instructions in this README to set up your cluster, ArgoCD and the `dp01-ops` repository, ArgoCD and Tekton. Continue to step 2.
-- Step 2: Continue with [these instructions](https://github.com/dp-auto/dpxx-src#readme) to create the `dp01-src` respository, run a tekton pipeline to populate it, and interact with the new or updated DataPower appliance `dp01`.
+This tutorial will walk you through the process of setting up this
+configuration:
+- Step 1: Follow the instructions in this README to set up your cluster, ArgoCD,
+  the `dp01-ops` repository, and Tekton. Continue to step 2.
+- Step 2: Move to [these
+  instructions](https://github.com/dp-auto/dpxx-src#readme) to create the
+  `dp01-src` repository, run a Tekton pipeline to populate the `dp01-ops`
+  repository, and interact with the new or updated DataPower appliance `dp01`.
 
 ---
 
 ## Install Kubernetes
 
-Requires Openshift. TBD for Minikube
+At the moment, this Tutorial requires OpenShift. It will be updated to support
+Minikube.
 
-Login to cluster:
+---
+
+### Login to Kubernetes
+
+From the your OpenShift web console console, select `Copy login command`, and
+copy the login command.
+
+Login to cluster using this command, for example:
 
 ```bash
-oc login --token=xxx --server=https:xxx
+oc login --token=sha256~noTAVal1dSHAR --server=https://example.cloud.com:31428
 ```
+
+which should return a response like this:
+
+```bash
+Logged into "https://example.cloud.com:31428" as "odowda@example.com" using the token provided.
+
+You have access to 67 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "default".
+```
+
+indicating that you are now logged into the cluster.
 
 ---
 
 ## Create a GitHub organization for your repositories
 
-This tutorial requires you to create 
+This tutorial requires you to create the `dp01-src` and `dp01-ops` repositories.
+You create them in a GitHub organization, which could be your default
+organization. However, its a good idea to create a separate organization as it
+encourages collaboration with your colleagues.
 
-Click on the following URL [https://github.com/settings/organizations](https://github.com/settings/organizations) to create a new organization:
+Click on the following URL
+[https://github.com/settings/organizations](https://github.com/settings/organizations)
+to create a new organization:
 
 ![diagram6](./docs/images/diagram6.png)
 
@@ -65,7 +110,16 @@ Click on `Create a free organization`
 
 Click on `Next`
 
-Your organization has been created, and we will it to host the `dp01-src` and `dp01-ops` respositories in this tutorial.
+![diagram8](./docs/images/diagram8.png)
+
+Click on `Complete setup`
+
+```bash
+export GITORG=odowdaibm
+```
+
+Your organization has been now been created, and we will it to host the
+`dp01-src` and `dp01-ops` repositories in this tutorial.
 
 Navigate to:
 
@@ -73,9 +127,9 @@ Navigate to:
 https://github.com/orgs/dporg-odowdaibm/repositories
 ```
 
-## Set up environemnt
+## Set up environment
 
-We're going to use 
+We're going to use...
 
 ```bash
 export GITORG=dporg-<your GitHub user name>
@@ -90,28 +144,35 @@ export GITORG=dporg-odowdaibm
 ---
 
 ## Fork repository
-[Fork this repository](https://github.com/dp-auto/dpxx-ops/generate) from a `Template`. 
+[Fork this repository](https://github.com/dp-auto/dpxx-ops/generate) from a
+`Template`.
   - In the `Repsoitory name` field, specify `dp01-ops`
 
-This repsoitory will be cloned to the specified GitHub account.
+This repository will be cloned to the specified GitHub account.
 
 ---
 
 ## Clone repository to your local machine
 
-We're going to use the contents of this repository to configure our cluster for CICD and GitOps. We're going to use a copy of the `dp01-ops` respository on our local machine to do this.
+We're going to use the contents of this repository to configure our cluster for
+CICD and GitOps. We're going to use a copy of the `dp01-ops` repository on our
+local machine to do this.
 
-Open new Terminal window. 
+Open new Terminal window.
 
-In it, store your Git userId in the `GITUSER` environment variable, e.g. `odowdaibm`
+In it, store your Git userId in the `GITUSER` environment variable, e.g.
+`odowdaibm`
 
 ```bash
 export GITUSER=odowdaibm
 ```
 
-Now clone the respository to your local machine. It's best practice to store all git repositories of a common root folder called `git`. We will keep both the dp01 source and operation repositories under a subfolder `datapower`.
+Now clone the repository to your local machine. It's best practice to store all
+git repositories of a common root folder called `git`. We will keep both the
+`dp01` source and operation repositories under a subfolder `datapower`.
 
-Issue the following commands to optionally create this folder structure, and clone the `dp01-ops` repository.
+Issue the following commands to optionally create this folder structure, and
+clone the `dp01-ops` repository.
 
 ```bash
 mkdir -p $HOME/git/datapower
@@ -123,7 +184,9 @@ git clone git@github.com:$GITUSER/dp01-ops.git
 
 ## Explore the `dp01-ops` repository
 
-The contents of the `dp01-ops` repository will be synchronized with the Kubernetes cluster such that every object in the repository wil be deployed to the cluster. Let's briefly explore the contents of this repository.
+The contents of the `dp01-ops` repository will be synchronized with the
+Kubernetes cluster such that every object in the repository will be deployed to
+the cluster. Let's briefly explore the contents of this repository.
 
 Issue the following command:
 
@@ -150,11 +213,13 @@ metadata:
     name: dp01-dev
 ```
 
-These YAMLs will define the `dp01-dev` namespace which will be used to store Kubernetes resources for this tutorial. We'll explore the contents of this namespace throughout the tutorial.
+These YAMLs will define the `dp01-dev` namespace which will be used to store
+Kubernetes resources for this tutorial. We'll explore the contents of this
+namespace throughout the tutorial.
 
 ---
 
-## Create Datapower `dev` namespace 
+## Create DataPower development namespace
 
 Let's use this YAML to define two namespaces in our cluster:
 
@@ -169,18 +234,24 @@ namespace/dp01-ci created
 namespace/dp01-dev created
 ```
 
-We'll see how: 
+We'll see how:
 
-- the `dp01-ci` namespace is used to store specific Kubernetes resources to build, package, version and test `dp01`.
-- the `dp01-dev` namespace is used to store specific Kubernetes resources relating to running `dp01`.
+- the `dp01-ci` namespace is used to store specific Kubernetes resources to
+  build, package, version and test `dp01`.
+- the `dp01-dev` namespace is used to store specific Kubernetes resources
+  relating to running `dp01`.
 
-As the turorial proceeds, we'll see how the contents of the `dp01-ops` repository **fully** defines the contents of all resources relating to our DataPower deployment. Moreover, we're going to set up the cluster such it is **automatically** updated whenever this `dp01-ops` repository changes. This concept is called **continuous deployemnt** and we'll use ArgoCD to acheive it.
+As the tutorial proceeds, we'll see how the contents of the `dp01-ops`
+repository **fully** defines the contents of all resources relating to our
+DataPower deployment. Moreover, we're going to set up the cluster such it is
+**automatically** updated whenever this `dp01-ops` repository changes. This
+concept is called **continuous deployment** and we'll use ArgoCD to achieve it.
 
 ---
 
-## Create ArgoCD subscription 
+## Create ArgoCD subscription
 
-Let's install ArgoCD to enable continuous deployment: 
+Let's install ArgoCD to enable continuous deployment:
 
 Use the following command to create a subscription for ArgoCD:
 
@@ -188,15 +259,20 @@ Use the following command to create a subscription for ArgoCD:
 oc apply -f setup/argocd-operator-sub.yaml
 ```
 
-which will create a subscription for ArgoCD: 
+which will create a subscription for ArgoCD:
 
 ```bash
 subscription.operators.coreos.com/openshift-gitops-operator created
 ```
 
-This subscription enables the cluster to keep up-to-date with new version of ArgoCD. Each release has an [install plan](https://olm.operatorframework.io/docs/concepts/olm-architecture/) that is used to maintain it. In what might seem like a contradiction, our subscription creates an install plan that requires manual approval; we'll understand why a little later. 
+This subscription enables the cluster to keep up-to-date with new version of
+ArgoCD. Each release has an [install
+plan](https://olm.operatorframework.io/docs/concepts/olm-architecture/) that is
+used to maintain it. In what might seem like a contradiction, our subscription
+creates an install plan that requires manual approval; we'll understand why a
+little later.
 
-Explore the subscription using the following command: 
+Explore the subscription using the following command:
 
 ```bash
 cat setup/argocd-operator-sub.yaml
@@ -218,7 +294,9 @@ spec:
   sourceNamespace: openshift-marketplace
 ```
 
-See if you can understand each YAML node, referring to [subscriptions](https://olm.operatorframework.io/docs/concepts/crds/subscription/) if you need to learn more. 
+See if you can understand each YAML node, referring to
+[subscriptions](https://olm.operatorframework.io/docs/concepts/crds/subscription/)
+if you need to learn more.
 
 ## Approve ArgoCD install plan
 
@@ -242,7 +320,10 @@ where `install-xxxxx` is the name of the ArgoCD install plan.
 
 ## Verify ArgoCD installation
 
-ArgoCD will now install; let's verify the installation has completed successfully by examining the ClusterServiceVersion (CSV) for ArgoCD. A CSV is created for each installation - it holds the exact versions of all dependent software and relevant RBAC permissions.
+ArgoCD will now install; let's verify the installation has completed
+successfully by examining the ClusterServiceVersion (CSV) for ArgoCD. A CSV is
+created for each installation - it holds the exact versions of all dependent
+software and relevant RBAC permissions.
 
 ```bash
 oc get clusterserviceversion -n openshift-gitops
@@ -268,9 +349,28 @@ oc patch argocd openshift-gitops  \
  --patch '{"spec":{"applicationInstanceLabelKey":"argocd.argoproj.io/instance"}}'
 ```
 
+---
+
+## Role and role binding
+
+ArgoCD requires permission to create resources in the `dp01-dev` namespace:
+
+```bash
+oc apply -f setup/dp-role.yaml
+```
+
+```bash
+oc apply -f setup/dp-rolebinding.yaml
+```
+
+---
+
 ## Add IBM catalog sources
 
-The final operator we need to add to the cluster is the DataPower operator. It is installed from a specific IBM [catalog source](https://olm.operatorframework.io/docs/concepts/crds/catalogsource/), so we first need to add the catalog source to the cluster.
+The final operator we need to add to the cluster is the DataPower operator. It
+is installed from a specific IBM [catalog
+source](https://olm.operatorframework.io/docs/concepts/crds/catalogsource/), so
+we first need to add the catalog source to the cluster.
 
 Issue the following command:
 
@@ -296,7 +396,8 @@ Notice how two catalog sources are added.
 
 ## Install DataPower operator
 
-Now we've added these catalog sources, we can install the DataPower operator; we're familar with the process -- it's the same as ArgoCD.
+Now we've added these catalog sources, we can install the DataPower operator;
+we're familiar with the process -- it's the same as ArgoCD.
 
 Issue the following command:
 
@@ -308,7 +409,7 @@ oc apply -f setup/dp-operator-sub.yaml
 subscription.operators.coreos.com/datapower-operator created
 ```
 
-Explore the subscription using the following command: 
+Explore the subscription using the following command:
 
 ```bash
 cat setup/dp-operator-sub.yaml
@@ -333,7 +434,9 @@ spec:
   startingCSV: datapower-operator.v1.6.3
 ```
 
-Notice how this operator is installed in the `openshift-operators` namespace. Note also the use of `channel` and `startingCSV` to be precise about the exact version of the DataPower operator to be installed.
+Notice how this operator is installed in the `openshift-operators` namespace.
+Note also the use of `channel` and `startingCSV` to be precise about the exact
+version of the DataPower operator to be installed.
 
 ## Approve and verify DataPower install plan
 
@@ -355,13 +458,15 @@ installplan.operators.coreos.com/install-xxxxx patched
 
 where `install-xxxxx` is the name of the DataPower install plan.
 
-Again, feel free to verify the DataPower installation with the following commands:
+Again, feel free to verify the DataPower installation with the following
+commands:
 
 ```bash
 oc get clusterserviceversion -n openshift-operators
 ```
 
-Replace `x.y.z` with the installed version of DataPower in the following command:
+Replace `x.y.z` with the installed version of DataPower in the following
+command:
 
 ```bash
 oc describe csv datapower-operator.vx.y.z -n openshift-operators
@@ -371,7 +476,11 @@ oc describe csv datapower-operator.vx.y.z -n openshift-operators
 
 ## Install Tekton pipelines
 
-Our final task is to install Tekton.  With it, we can create pipelines that populate the operational repository `dp01-ops` using the DataPower configuration and development artefacts stored in `dp01-src`. Once populated by Tekton, ArgoCD will then synchronize these artefacts with the cluster to ensure the cluster is running the most up-tp-date version of `dp01`. 
+Our final task is to install Tekton.  With it, we can create pipelines that
+populate the operational repository `dp01-ops` using the DataPower configuration
+and development artifacts stored in `dp01-src`. Once populated by Tekton, ArgoCD
+will then synchronize these artifacts with the cluster to ensure the cluster is
+running the most up-to-date version of `dp01`.
 
 Issue the following command to create a subscription for Tekton:
 
@@ -385,9 +494,10 @@ which will create a subscription:
 subscription.operators.coreos.com/openshift-pipelines-operator created
 ```
 
-Again, this subscription enables the cluster to keep up-to-date with new version of Tekton. 
+Again, this subscription enables the cluster to keep up-to-date with new version
+of Tekton.
 
-Explore the subscription using the following command: 
+Explore the subscription using the following command:
 
 ```bash
 cat setup/tekton-operator-sub.yaml
@@ -409,7 +519,7 @@ spec:
   sourceNamespace: openshift-marketplace
 ```
 
-Manual Tekton install: 
+Manual Tekton install:
 ```bash
 kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.16.3/release.yaml)
 ```
@@ -451,7 +561,8 @@ oc describe csv openshift-pipelines-operator-rh.vx.y.z -n openshift-operators
 
 ## Generate ssh keys for GitHub access
 
-To allow Tekton to access GitHub, specifically to create YAMLs in the `dp01-ops` repository, we need to set up appropriate SSH keys for access.
+To allow Tekton to access GitHub, specifically to create YAMLs in the `dp01-ops`
+repository, we need to set up appropriate SSH keys for access.
 
 Issue the following command to create an SSH key pair:
 
@@ -465,7 +576,8 @@ Issue the following command to create a `known_hosts` file for SSH access:
 ssh-keyscan -t rsa github.com | tee ./.ssh/github-key-temp | cat ./.ssh/github-key-temp >> ./.ssh/known_hosts
 ```
 
-Issue the following command to create a secret containing the  SSH private key and `known_hosts` file:
+Issue the following command to create a secret containing the  SSH private key
+and `known_hosts` file:
 
 ```bash
 oc create secret generic dp01-ssh-credentials -n dp01-ci --from-file=id_rsa=./.ssh/id_rsa --from-file=known_hosts=./.ssh/known_hosts --from-file=./.ssh/config --dry-run=client -o yaml > .ssh/dp-git-credentials.yaml
@@ -477,7 +589,8 @@ Issue the following command to create this secret in the cluster:
 oc apply -f .ssh/dp-git-credentials.yaml
 ```
 
-Finally, add this secret to the `pipeline` service account to allow it to use `dp-1-ssh-credentials` secret to access GitHub.
+Finally, add this secret to the `pipeline` service account to allow it to use
+`dp-1-ssh-credentials` secret to access GitHub.
 
 ```bash
 oc patch serviceaccount pipeline \
@@ -490,9 +603,12 @@ oc patch serviceaccount pipeline \
 
 ## Copy ssh credential into Github
 
-To allow the Tekton pipeline to push the generated DataPower Kubernetes resource YAMLs to the `dp01-ops` repository, we need to add the public key we've just generated to GitHub. 
+To allow the Tekton pipeline to push the generated DataPower Kubernetes resource
+YAMLs to the `dp01-ops` repository, we need to add the public key we've just
+generated to GitHub.
 
-Use the following link in a browser to access the GitHub user interface to add an SSH public key:
+Use the following link in a browser to access the GitHub user interface to add
+an SSH public key:
 
 ```bash
 https://github.com/settings/keys
@@ -517,13 +633,13 @@ Click on `New SSH Key`, and complete the following details:
 
 * Hit `Add SSH key` button
 
-The Tekton pipeline now has access to your GitHub. 
+The Tekton pipeline now has access to your GitHub.
 
 *(Might be better to use access tokens, to limit scope... consider as change.)*
 
 ---
 
-## An ArgoCD application to manage dp01
+## An ArgoCD application to manage `dp01`
 
 Finally, we're going to create an ArgoCD application to manage `dp01`.
 
@@ -558,10 +674,11 @@ spec:
       - Replace=true
 ```
 
-In your GitHub repository, replace `dp-auto` with your Git user id and deploy it to the cluster:
-(**Add push commands**)
+In your GitHub repository, replace `dp-auto` with your Git user id and deploy it
+to the cluster: (**Add push commands**)
 
-Notice how the this Argo application will be monitoring GitHub for resources to deploy to the cluster:
+Notice how the this Argo application will be monitoring GitHub for resources to
+deploy to the cluster:
 
 ```yaml
   source:
@@ -571,11 +688,12 @@ Notice how the this Argo application will be monitoring GitHub for resources to 
 ```
 
 See how:
-  - `repoURL: https://github.com/odowdaibm/dp01-ops.git` identifies the repository where the YAMLs are located
+  - `repoURL: https://github.com/odowdaibm/dp01-ops.git` identifies the
+    repository where the YAMLs are located
   - `targetRevision: main` identifies the branch within the repository
   - `path: environments/dev/dp01/` identifies the folder within the repository
 
-## Deploy dp01-argo to the cluster
+## Deploy `dp01-argo` to the cluster
 
 Let's deploy this ArgoCD application to the cluster:
 
@@ -591,14 +709,15 @@ application.argoproj.io/dp01-argo created
 
 We now have an ArgoCD application monitoring our repository.
 
-## View dp01-argo in ArgoCD UI
+## View `dp01-argo` in ArgoCD UI
 
-We can use the ArgoCD UI to look at the `dp01-argo` application and the resources it is managing:
+We can use the ArgoCD UI to look at the `dp01-argo` application and the
+resources it is managing:
 
 Issue the following command to identify the URL for the ArgoCD login page:
 
 ```bash
-oc get route openshift-gitops-server -n openshift-gitops -o jsonpath='{"https://"}{.spec.host}{"\n"}' 
+oc get route openshift-gitops-server -n openshift-gitops -o jsonpath='{"https://"}{.spec.host}{"\n"}'
 ```
 
 which will return a URL similar to this:
@@ -607,7 +726,8 @@ which will return a URL similar to this:
 https://openshift-gitops-server-openshift-gitops.vpc-mq-cluster1-d02cf90349a0fe46c9804e3ab1fe2643-0000.eu-gb.containers.appdomain.cloud
 ```
 
-Issue the following command to determin the ArgoCD `password` for the `admin` user: 
+Issue the following command to determine the ArgoCD `password` for the `admin`
+user:
 
 ```bash
 oc extract secret/openshift-gitops-cluster -n openshift-gitops --keys="admin.password" --to=-
@@ -619,7 +739,8 @@ You will see the following screen:
 
 ![diagram4](./docs/images/diagram4.png)
 
-The ArgoCD application `dp01-argo` is monitoring the `https://github.com/ODOWDAIBM/dp01-ops` repository.
+The ArgoCD application `dp01-argo` is monitoring the
+`https://github.com/ODOWDAIBM/dp01-ops` repository.
 
 We will now run the Tekton pipeline to populate this repository.
 
@@ -627,9 +748,10 @@ We will now run the Tekton pipeline to populate this repository.
 
 ## Congratulations
 
-You've set up your cluster for DataPower.  Let's run a pipeline to populate the repository.  
+You've set up your cluster for DataPower.  Let's run a pipeline to populate the
+repository.
 
-Continue [here](https://github.com/dp-auto/dpxx-src#readme): 
+Continue [here](https://github.com/dp-auto/dpxx-src#readme):
 
 ---
 
