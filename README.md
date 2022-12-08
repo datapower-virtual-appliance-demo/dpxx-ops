@@ -1,9 +1,9 @@
 ## Overview
 
-This tutorial demonstrates a platform engineering approach for DataPower
+This tutorial demonstrates a platform engineering approach to DataPower
 development and deployment. It demonstrates continuous integration, continuous
-deployment, GitOps, Infrastructure as Code and DevOps by using containers,
-Kubernetes and a set of popular cloud native tools.
+deployment, GitOps, Infrastructure as Code and DevOps using containers,
+Kubernetes and a set of popular cloud native tools such as ArgoCD and Tekton.
 
 In this tutorial, you will:
 
@@ -12,16 +12,16 @@ In this tutorial, you will:
    deployed to the Kubernetes cluster.
 3. Install ArgoCD to manage the continuous deployment of DataPower-related
    resources to the cluster.
-4. Create a source Git repository for DataPower development artifacts for a
-   virtual DataPower appliance.
+4. Create a source Git repository that holds the DataPower development artifacts
+   for a virtual DataPower appliance.
 5. Install Tekton to provide continuous integration of the source DataPower
-   artifacts. These pipeline ensures that all changes are successful built,
-   packaged, versioned and tested before they are delivered into an operational
-   repository, read for deployment.
+   artifacts. These pipeline ensures that all changes to these artifacts are
+   successful built, packaged, versioned and tested before they are delivered
+   into the operational repository, read for deployment.
 6. Gain experience with the IBM-supplied DataPower operator and container.
 
-You will gain a practical foundation of Platform Engineering knowledge and
-experience using GitOps, DevOps, CICD for DataPower in a Kubernetes environment.
+By the end of the tutorial, you will have practical experience and knowledge of
+platform engineering with DataPower in a Kubernetes environment.
 
 ---
 
@@ -62,7 +62,7 @@ Minikube.
 
 ---
 
-### Login to Kubernetes
+## Login to the cluster
 
 From the your OpenShift web console console, select `Copy login command`, and
 copy the login command.
@@ -70,7 +70,7 @@ copy the login command.
 Login to cluster using this command, for example:
 
 ```bash
-oc login --token=sha256~noTAVal1dSHAR --server=https://example.cloud.com:31428
+oc login --token=sha256~noTAVal1dSHA --server=https://example.cloud.com:31428
 ```
 
 which should return a response like this:
@@ -83,110 +83,180 @@ You have access to 67 projects, the list has been suppressed. You can list all p
 Using project "default".
 ```
 
-indicating that you are now logged into the cluster.
+indicating that you are now logged into the Kubernetes cluster.
 
 ---
 
 ## Create a GitHub organization for your repositories
 
 This tutorial requires you to create the `dp01-src` and `dp01-ops` repositories.
-You create them in a GitHub organization, which could be your default
-organization. However, its a good idea to create a separate organization as it
-encourages collaboration with your colleagues.
+It's a good idea to create them in a separate organization because it makes it
+easy to collaborate with your colleagues later on.
 
-Click on the following URL
-[https://github.com/settings/organizations](https://github.com/settings/organizations)
+<br>
+
+Click on the following URL: [https://github.com/settings/organizations](https://github.com/settings/organizations)
 to create a new organization:
 
-![diagram6](./docs/images/diagram6.png)
 
-Click on `New organization`
+<br> You will see a list of your existing GitHub organizations:
 
-![diagram7](./docs/images/diagram7.png)
+<img src="./docs/images/diagram6.png" alt="drawing" width="800"/>
 
-Click on `Create a free organization`
+You're going to create a new organization for this tutorial.
 
-![diagram8](./docs/images/diagram8.png)
+<br> Click on `New organization`:
 
-Click on `Next`
+<br> This shows you the list of available plans:
 
-![diagram8](./docs/images/diagram8.png)
+<img src="./docs/images/diagram7.png" alt="drawing" width="800"/>
 
-Click on `Complete setup`
+The `Free` plan is sufficient for this tutorial.
+
+<br> Click on `Create a free organization`:
+
+<br> This shows you the properties for the new organization.
+
+<img src="./docs/images/diagram8.png" alt="drawing" width="800"/>
+
+<br> Complete the details for your new organization.
+
+* Specify `Organization account name` of the form `dporg-xxxxx` where `xxxxx` is
+  your GitHub user name.
+* Specify `Contact mail` e.g. `odowda@example.com`
+* Select `My personal account`.
+
+<br> Once you've complete this page, click `Next`:
+
+<br> Your new organization `dporg-xxxxx` has now been created:
+<img src="./docs/images/diagram9.png" alt="drawing" width="800"/>
+
+You can add colleagues to this organization each with a particular role. For
+now, we can use the organization as-is.
+
+<br> Click on `Complete setup` to complete the organization creation process.
+
+<br> Although you may see a few more screens, such as a usage survey, your
+organization has been now been created. We will use it to host the `dp01-src`
+and `dp01-ops` repositories in this tutorial.
+
+---
+
+##  Useful environment variables
+
+We now define some environment variables that are used by the commands in this
+tutorial to make them easy to use.
+
+Define your GitHub organization name in the `GITORG` variable using the name you
+supplied above, e.g. `dporg-xxxxx`.
+
+Open a new Terminal window and type:
 
 ```bash
-export GITORG=odowdaibm
+export GITORG=dporg-odowdaibm
 ```
 
-Your organization has been now been created, and we will it to host the
-`dp01-src` and `dp01-ops` repositories in this tutorial.
+Let's use this environment variable to examine your new organization in GitHub.
 
-Navigate to:
+Enter the following command:
+
+```bash
+echo https://github.com/orgs/$GITORG/repositories
+```
+
+which will respond with a URL of this form:
 
 ```bash
 https://github.com/orgs/dporg-odowdaibm/repositories
 ```
 
-## Set up environment
+Navigate to this URL in your browser:
 
-We're going to use...
+<img src="./docs/images/diagram10.png" alt="drawing" width="800"/>
 
-```bash
-export GITORG=dporg-<your GitHub user name>
-```
-
-for example
-
-```
-export GITORG=dporg-odowdaibm
-```
+You can see that your new organization doesn't yet have any repositories in it.
+Let's start by adding the `dp01-ops` repository to it.
 
 ---
 
-## Fork repository
-[Fork this repository](https://github.com/dp-auto/dpxx-ops/generate) from a
-`Template`.
-  - In the `Repsoitory name` field, specify `dp01-ops`
+## Creating the `dp01-ops` repository
 
-This repository will be cloned to the specified GitHub account.
+We use a [template repository](https://github.com/dp-auto/dpxx-ops) to
+create `dp01-ops` in our new organization. Forking a template creates a
+repository with a clean git history, allowing us to track the history of changes
+to our cluster every time we update `dp01-ops`.
+
+<br> Click on [this URL](https://github.com/dp-auto/dpxx-ops/generate) to fork from
+the `dpxx-ops` template repository:
+
+<img src="./docs/images/diagram11.png" alt="drawing" width="800"/>
+
+This screen allows you to define the properties for you copy of the `dp01-src`
+repository.
+
+Specifically:
+
+* In the `Repository name` field, specify `dp01-ops`.
+* In the `Description` field, specify `Operational repository for DataPower`.
+* Select `Public` for the repository visibility.
+
+<br> Click on `Create repository from template`:
+
+<br> This repository will be cloned to the specified GitHub account:
+<img src="./docs/images/diagram12.png" alt="drawing" width="800"/>
+
+<br> You have successfully created a copy of the `dp01-ops` repository in your
+organization.
 
 ---
 
 ## Clone repository to your local machine
 
-We're going to use the contents of this repository to configure our cluster for
-CICD and GitOps. We're going to use a copy of the `dp01-ops` repository on our
-local machine to do this.
+We're going to use the contents of this repository to configure our cluster. To
+do this we need to clone this repository to our local machine.
 
-Open new Terminal window.
+It's best practice to store cloned git repositories under a folder called `git`,
+with subfolders that correspond to your projects.
 
-In it, store your Git userId in the `GITUSER` environment variable, e.g.
-`odowdaibm`
-
-```bash
-export GITUSER=odowdaibm
-```
-
-Now clone the repository to your local machine. It's best practice to store all
-git repositories of a common root folder called `git`. We will keep both the
-`dp01` source and operation repositories under a subfolder `datapower`.
-
-Issue the following commands to optionally create this folder structure, and
-clone the `dp01-ops` repository.
+Issue the following commands to create this folder structure and clone the
+`dp01-ops` repository from GitHub to your local machine.
 
 ```bash
-mkdir -p $HOME/git/datapower
-cd $HOME/git/datapower
-git clone git@github.com:$GITUSER/dp01-ops.git
+mkdir -p $HOME/git/$GITORG-tutorial
+cd $HOME/git/$GITORG-tutorial
+git clone git@github.com:$GITORG/dp01-ops.git
 ```
+
+---
+
+## Create DataPower development namespace
+
+Let's use some YAML in `dp01-ops` to define two namespaces in our cluster:
+
+Issue the following command:
+
+```bash
+oc apply -f setup/namespaces.yaml
+```
+
+which will create the `dp01-dev` namespace in the cluster.
+
+```bash
+namespace/dp01-ci created
+namespace/dp01-dev created
+```
+
+As the tutorial proceeds, we'll see how the contents of the `dp01-ops`
+repository **fully** defines the contents of all resources relating to our
+DataPower deployment. Moreover, we're going to set up the cluster such it is
+**automatically** updated whenever this `dp01-ops` repository changes. This
+concept is called **continuous deployment** and we'll use ArgoCD to achieve it.
 
 ---
 
 ## Explore the `dp01-ops` repository
 
-The contents of the `dp01-ops` repository will be synchronized with the
-Kubernetes cluster such that every object in the repository will be deployed to
-the cluster. Let's briefly explore the contents of this repository.
+If you'd like to understand a little bit more about how the namespaces were created, you can explore the contents of the `dp01-ops` repository.
 
 Issue the following command:
 
@@ -195,7 +265,7 @@ cd dp01-ops
 cat setup/namespaces.yaml
 ```
 
-which shows the following YAMLs.
+which shows the following namespace definitions.
 
 ```yaml
 kind: Namespace
@@ -213,45 +283,18 @@ metadata:
     name: dp01-dev
 ```
 
-These YAMLs will define the `dp01-dev` namespace which will be used to store
-Kubernetes resources for this tutorial. We'll explore the contents of this
-namespace throughout the tutorial.
-
----
-
-## Create DataPower development namespace
-
-Let's use this YAML to define two namespaces in our cluster:
-
-```bash
-oc apply -f setup/namespaces.yaml
-```
-
-which will create the `dp01-dev` namespace in the cluster.
-
-```bash
-namespace/dp01-ci created
-namespace/dp01-dev created
-```
-
-We'll see how:
+During this tutorial, we'll see how:
 
 - the `dp01-ci` namespace is used to store specific Kubernetes resources to
   build, package, version and test `dp01`.
 - the `dp01-dev` namespace is used to store specific Kubernetes resources
-  relating to running `dp01`.
-
-As the tutorial proceeds, we'll see how the contents of the `dp01-ops`
-repository **fully** defines the contents of all resources relating to our
-DataPower deployment. Moreover, we're going to set up the cluster such it is
-**automatically** updated whenever this `dp01-ops` repository changes. This
-concept is called **continuous deployment** and we'll use ArgoCD to achieve it.
+  relating to a running DataPower virtual appliance, `dp01`.
 
 ---
 
 ## Create ArgoCD subscription
 
-Let's install ArgoCD to enable continuous deployment:
+Let's install ArgoCD to enable continuous deployment.
 
 Use the following command to create a subscription for ArgoCD:
 
