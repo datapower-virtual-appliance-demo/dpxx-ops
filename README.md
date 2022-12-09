@@ -239,24 +239,25 @@ Issue the following command:
 oc apply -f setup/namespaces.yaml
 ```
 
-which will create the `dp01-dev` namespace in the cluster.
+which will confirm the following namespaces are created in the cluster:
 
 ```bash
 namespace/dp01-ci created
 namespace/dp01-dev created
 ```
 
-As the tutorial proceeds, we'll see how the contents of the `dp01-ops`
-repository **fully** defines the contents of all resources relating to our
-DataPower deployment. Moreover, we're going to set up the cluster such it is
-**automatically** updated whenever this `dp01-ops` repository changes. This
-concept is called **continuous deployment** and we'll use ArgoCD to achieve it.
+As the tutorial proceeds, we'll see how the YAMLs in `dp01-ops` **fully** define
+the DataPower related resources deployed to the cluster. In fact, we're going to
+set up the cluster such it is **automatically** updated whenever the `dp01-ops`
+repository is updated. This concept is called **continuous deployment** and we'll
+use ArgoCD to achieve it.
 
 ---
 
 ## Explore the `dp01-ops` repository
 
-If you'd like to understand a little bit more about how the namespaces were created, you can explore the contents of the `dp01-ops` repository.
+If you'd like to understand a little bit more about how the namespaces were
+created, you can explore the contents of the `dp01-ops` repository.
 
 Issue the following command:
 
@@ -265,7 +266,7 @@ cd dp01-ops
 cat setup/namespaces.yaml
 ```
 
-which shows the following namespace definitions.
+which shows the following namespace definitions:
 
 ```yaml
 kind: Namespace
@@ -281,6 +282,22 @@ metadata:
   name: dp01-dev
   labels:
     name: dp01-dev
+```
+
+Issue the following command to show these namespaces in the cluster
+
+```bash
+oc get namespace dp01-ci
+oc get namespace dp01-dev
+```
+
+which will shows these namespaces and their age, for example:
+
+```bash
+NAME      STATUS   AGE
+dp01-ci   Active   27d
+NAME       STATUS   AGE
+dp01-dev   Active   35d
 ```
 
 During this tutorial, we'll see how:
@@ -307,13 +324,6 @@ which will create a subscription for ArgoCD:
 ```bash
 subscription.operators.coreos.com/openshift-gitops-operator created
 ```
-
-This subscription enables the cluster to keep up-to-date with new version of
-ArgoCD. Each release has an [install
-plan](https://olm.operatorframework.io/docs/concepts/olm-architecture/) that is
-used to maintain it. In what might seem like a contradiction, our subscription
-creates an install plan that requires manual approval; we'll understand why a
-little later.
 
 Explore the subscription using the following command:
 
@@ -343,7 +353,15 @@ if you need to learn more.
 
 ## Approve ArgoCD install plan
 
+This subscription enables the cluster to keep up-to-date with new releases of
+ArgoCD. Each release has an [install
+plan](https://olm.operatorframework.io/docs/concepts/olm-architecture/) that is
+used to maintain it. Our install plan requires manual approval; we'll see why a
+little later.
+
 Let's find our install plan and approve it.
+
+Issue the following command:
 
 ```bash
 oc get installplan -n openshift-operators | grep "openshift-gitops-operator" | awk '{print $1}' | \
@@ -353,20 +371,25 @@ xargs oc patch installplan \
  --patch '{"spec":{"approved":true}}'
 ```
 
-which will approve the install plan
+which will approve the install plan `install-xxxxx` for ArgoCD.
 
 ```bash
 installplan.operators.coreos.com/install-xxxxx patched
 ```
 
-where `install-xxxxx` is the name of the ArgoCD install plan.
+ArgoCD will now install; this may take a few minutes.
 
 ## Verify ArgoCD installation
 
-ArgoCD will now install; let's verify the installation has completed
-successfully by examining the ClusterServiceVersion (CSV) for ArgoCD. A CSV is
-created for each installation - it holds the exact versions of all dependent
-software and relevant RBAC permissions.
+A
+[ClusterServiceVersion](https://olm.operatorframework.io/docs/concepts/crds/clusterserviceversion/)
+(CSV) is created for each release of the ArgoCD operator installed in the
+cluster.  it holds the dependent images used by the operator.
+
+We can verify that the installation has completed successfully by examining the
+CSV for ArgoCD.
+
+Issue the following command:
 
 ```bash
 oc get clusterserviceversion -n openshift-gitops
@@ -377,13 +400,27 @@ NAME                               DISPLAY                    VERSION   REPLACES
 openshift-gitops-operator.v1.5.7   Red Hat OpenShift GitOps   1.5.7     openshift-gitops-operator.v1.5.6-0.1664915551.p   Succeeded
 ```
 
-Feel free to explore this CSV with, replacing `x.y.z` with the installed version of ArgoCD:
+See how the operator has been successfully installed at version 1.5.7, replacing
+the previous version 1.5.6.
+
+Feel free to explore this CSV with, replacing `x.y.z` with the installed version
+of ArgoCD:
 
 ```bash
 oc describe csv openshift-gitops-operator.vx.y.z -n openshift-operators
 ```
 
+The output provides an extensive amount of information is provided not listed
+here; feel free to examine it.
+
 ## Minor modifications to ArgoCD
+
+ArgoCD will deploy `dp01` and its related resources to the cluster. These
+resources are labelled by ArgoCD with a specific `applicationInstanceLabelKey`
+so that they can be tracked for configuration drift. The default label used by ArgoCD collides with DataPower operator, so we need to change it.
+
+Issue the following command to change the `applicationInstanceLabelKey`used by
+ArgoCD:
 
 ```bash
 oc patch argocd openshift-gitops  \
@@ -392,19 +429,73 @@ oc patch argocd openshift-gitops  \
  --patch '{"spec":{"applicationInstanceLabelKey":"argocd.argoproj.io/instance"}}'
 ```
 
+which should respond with:
+
+```bash
+argocd.argoproj.io/openshift-gitops patched
+```
+
+which confirms that the ArgoCD operator has been patched and will now add this
+label to every resource it deploys to the cluster.
+
 ---
 
 ## Role and role binding
 
-ArgoCD requires permission to create resources in the `dp01-dev` namespace:
+ArgoCD requires permission to create resources in the `dp01-dev` namespace. We
+use a role to define the resources required to deploy a DataPower virtual
+appliance, and a role binding to associate this role with the `serviceaccount`
+associated with ArgoCD.
+
+Issue the following command to create this `role`:
 
 ```bash
 oc apply -f setup/dp-role.yaml
 ```
 
+which confirms that the `dp-deployer` role has been created:
+
+```bash
+role.rbac.authorization.k8s.io/dp-deployer created
+```
+
+Issue the following command to create the corresponding `rolebinding`:
+
 ```bash
 oc apply -f setup/dp-rolebinding.yaml
 ```
+
+which confirms that the `dp-deployer` role binding  has been created:
+
+```bash
+rolebinding.rbac.authorization.k8s.io/dp-deployer
+```
+
+We can see which resources ArgoCD can now create in the cluster by examining the
+`dp-deployer` role:
+
+```bash
+oc describe role dp-deployer -n dp01-dev
+```
+
+which returns:
+
+```bash
+Name:         dp-deployer
+Labels:       <none>
+Annotations:  <none>
+PolicyRule:
+  Resources                            Non-Resource URLs  Resource Names  Verbs
+  ---------                            -----------------  --------------  -----
+  secrets                              []                 []              [*]
+  services                             []                 []              [*]
+  datapowerservices.datapower.ibm.com  []                 []              [*]
+  ingresses.networking.k8s.io          []                 []              [*]
+```
+
+See how ArgoCD can now control `secrets`, `services`, `datapowerservices` and
+`ingresses` with all operations such as create, read, update and delete (i.e.
+`Verbs[*]`).
 
 ---
 
