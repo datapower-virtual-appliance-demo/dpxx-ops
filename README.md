@@ -392,7 +392,7 @@ CSV for ArgoCD.
 Issue the following command:
 
 ```bash
-oc get clusterserviceversion -n openshift-gitops
+oc get clusterserviceversion openshift-gitops-operator.v1.5.7 -n openshift-gitops
 ```
 
 ```bash
@@ -400,14 +400,12 @@ NAME                               DISPLAY                    VERSION   REPLACES
 openshift-gitops-operator.v1.5.7   Red Hat OpenShift GitOps   1.5.7     openshift-gitops-operator.v1.5.6-0.1664915551.p   Succeeded
 ```
 
-See how the operator has been successfully installed at version 1.5.7, replacing
-the previous version 1.5.6.
+See how the operator has been successfully installed at version 1.5.7.
 
-Feel free to explore this CSV with, replacing `x.y.z` with the installed version
-of ArgoCD:
+Feel free to explore this CSV:
 
 ```bash
-oc describe csv openshift-gitops-operator.vx.y.z -n openshift-operators
+oc describe csv openshift-gitops-operator.v1.5.7 -n openshift-operators
 ```
 
 The output provides an extensive amount of information is provided not listed
@@ -501,10 +499,10 @@ See how ArgoCD can now control `secrets`, `services`, `datapowerservices` and
 
 ## Add IBM catalog sources
 
-The final operator we need to add to the cluster is the DataPower operator. It
-is installed from a specific IBM [catalog
+Like ArgoCD, there is a dedicated operator that manages DataPower virtual appliances in
+the cluster. Unlike ArgoCD, its definition is held in the IBM [catalog
 source](https://olm.operatorframework.io/docs/concepts/crds/catalogsource/), so
-we first need to add the catalog source to the cluster.
+we need to add this catalog source to the cluster before we can install it.
 
 Issue the following command:
 
@@ -512,32 +510,68 @@ Issue the following command:
 oc apply -f setup/catalog-sources.yaml
 ```
 
-which will add the sources defined in this YAML to the cluster:
+which will add the catalog sources defined in this YAML to the cluster:
 
 ```bash
+catalogsource.operators.coreos.com/opencloud-operators created
 catalogsource.operators.coreos.com/ibm-operator-catalog created
 ```
 
-Feel free to examine the catalog source YAML:
+Notice, that there actually **two** new catalog sources added; feel free to
+examine the catalog source YAML:
 
 ```bash
 cat setup/catalog-sources.yaml
 ```
 
-Notice how two catalog sources are added.
+which shows you the detailed YAML for these catalog sources:
+
+```bash
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: opencloud-operators
+  namespace: openshift-marketplace
+spec:
+  displayName: IBMCS Operators
+  publisher: IBM
+  sourceType: grpc
+  image: docker.io/ibmcom/ibm-common-service-catalog:latest
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-operator-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: IBM Operator Catalog
+  image: 'icr.io/cpopen/ibm-operator-catalog:latest'
+  publisher: IBM
+  sourceType: grpc
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+```
+
+Examine these YAMLs to see if you can understand [how they
+work](https://olm.operatorframework.io/docs/concepts/crds/catalogsource/).
 
 ---
 
 ## Install DataPower operator
 
-Now we've added these catalog sources, we can install the DataPower operator;
-we're familiar with the process -- it's the same as ArgoCD.
+We can now install the DataPower operator; using the same process as we used with ArgoCD.
 
 Issue the following command:
 
 ```bash
 oc apply -f setup/dp-operator-sub.yaml
 ```
+
+which will create the DataPower operator subscription:
 
 ```bash
 subscription.operators.coreos.com/datapower-operator created
@@ -574,7 +608,7 @@ version of the DataPower operator to be installed.
 
 ## Approve and verify DataPower install plan
 
-Let's find our install plan and approve it.
+Let's find our DataPower install plan and approve it.
 
 ```bash
 oc get installplan -n openshift-operators | grep "datapower-operator" | awk '{print $1}' | \
@@ -596,15 +630,22 @@ Again, feel free to verify the DataPower installation with the following
 commands:
 
 ```bash
-oc get clusterserviceversion -n openshift-operators
+oc get clusterserviceversion datapower-operator.v1.6.4 -n openshift-operators
 ```
-
-Replace `x.y.z` with the installed version of DataPower in the following
-command:
 
 ```bash
-oc describe csv datapower-operator.vx.y.z -n openshift-operators
+NAME                                     DISPLAY                       VERSION   REPLACES                                          PHASE
+datapower-operator.v1.6.4                IBM DataPower Gateway         1.6.4     datapower-operator.v1.6.3                         Succeeded
 ```
+
+which shows that the 1.6.4 version of the operator has been successfully installed.
+
+```bash
+oc describe csv datapower-operator.v1.6.4 -n openshift-operators
+```
+
+The output provides an extensive amount of information is provided not listed
+here; feel free to examine it.
 
 ---
 
