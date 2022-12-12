@@ -248,7 +248,7 @@ namespace/dp01-dev created
 
 As the tutorial proceeds, we'll see how the YAMLs in `dp01-ops` **fully** define
 the DataPower related resources deployed to the cluster. In fact, we're going to
-set up the cluster such it is **automatically** updated whenever the `dp01-ops`
+set up the cluster such that it is **automatically** updated whenever the `dp01-ops`
 repository is updated. This concept is called **continuous deployment** and we'll
 use ArgoCD to achieve it.
 
@@ -262,7 +262,6 @@ created, you can explore the contents of the `dp01-ops` repository.
 Issue the following command:
 
 ```bash
-cd dp01-ops
 cat setup/namespaces.yaml
 ```
 
@@ -384,7 +383,7 @@ ArgoCD will now install; this may take a few minutes.
 A
 [ClusterServiceVersion](https://olm.operatorframework.io/docs/concepts/crds/clusterserviceversion/)
 (CSV) is created for each release of the ArgoCD operator installed in the
-cluster.  it holds the dependent images used by the operator.
+cluster. This tells Operator Lifecycle Manager how to deploy and run the operator.
 
 We can verify that the installation has completed successfully by examining the
 CSV for ArgoCD.
@@ -408,7 +407,7 @@ Feel free to explore this CSV:
 oc describe csv openshift-gitops-operator.v1.5.7 -n openshift-operators
 ```
 
-The output provides an extensive amount of information is provided not listed
+The output provides an extensive amount of information not listed
 here; feel free to examine it.
 
 ## Minor modifications to ArgoCD
@@ -469,7 +468,7 @@ which confirms that the `dp-deployer` role binding  has been created:
 rolebinding.rbac.authorization.k8s.io/dp-deployer
 ```
 
-We can see which resources ArgoCD can now create in the cluster by examining the
+We can see which resources ArgoCD can create in the cluster by examining the
 `dp-deployer` role:
 
 ```bash
@@ -644,7 +643,7 @@ which shows that the 1.6.4 version of the operator has been successfully install
 oc describe csv datapower-operator.v1.6.4 -n openshift-operators
 ```
 
-The output provides an extensive amount of information is provided not listed
+The output provides an extensive amount of information not listed
 here; feel free to examine it.
 
 ---
@@ -849,8 +848,18 @@ spec:
       - Replace=true
 ```
 
-In your GitHub repository, replace `dp-auto` with your Git user id and deploy it
-to the cluster: (**Add push commands**)
+Replace `dp-auto` with your GitHub organisation and deploy it to the cluster:
+(**Add push commands**)
+
+```bash
+sed -i -e "s/dp-auto/$GITORG/g" environments/dev/argocd/dp01.yaml
+```
+
+Review the change:
+
+```bash
+cat environments/dev/argocd/dp01.yaml
+```
 
 Notice how the this Argo application will be monitoring GitHub for resources to
 deploy to the cluster:
@@ -858,12 +867,12 @@ deploy to the cluster:
 ```yaml
   source:
     path: environments/dev/dp01/
-    repoURL: https://github.com/odowdaibm/dp01-ops.git
+    repoURL: https://github.com/dporg-odowdaibm/dp01-ops.git
     targetRevision: main
 ```
 
 See how:
-  - `repoURL: https://github.com/odowdaibm/dp01-ops.git` identifies the
+  - `repoURL: https://github.com/dporg-odowdaibm/dp01-ops.git` identifies the
     repository where the YAMLs are located
   - `targetRevision: main` identifies the branch within the repository
   - `path: environments/dev/dp01/` identifies the folder within the repository
@@ -917,7 +926,7 @@ You will see the following screen:
 The ArgoCD application `dp01-argo` is monitoring the
 `https://github.com/ODOWDAIBM/dp01-ops` repository.
 
-We will now run the Tekton pipeline to populate this repository.
+In the next step we will run the Tekton pipeline to populate this repository.
 
 ---
 
