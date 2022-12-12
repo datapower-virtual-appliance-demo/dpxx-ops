@@ -838,7 +838,7 @@ spec:
   project: default
   source:
     path: environments/dev/dp01/
-    repoURL: https://github.com/dp-auto/dp01-ops.git
+    repoURL: https://github.com/$GITORG/dp01-ops.git
     targetRevision: main
   syncPolicy:
     automated:
@@ -848,41 +848,28 @@ spec:
       - Replace=true
 ```
 
-Replace `dp-auto` with your GitHub organisation and deploy it to the cluster:
-(**Add push commands**)
-
-```bash
-sed -i -e "s/dp-auto/$GITORG/g" environments/dev/argocd/dp01.yaml
-```
-
-Review the change:
-
-```bash
-cat environments/dev/argocd/dp01.yaml
-```
-
-Notice how the this Argo application will be monitoring GitHub for resources to
+Notice how the Argo application will monitor GitHub for resources to
 deploy to the cluster:
 
 ```yaml
   source:
     path: environments/dev/dp01/
-    repoURL: https://github.com/dporg-odowdaibm/dp01-ops.git
+    repoURL: https://github.com/$GITORG/dp01-ops.git
     targetRevision: main
 ```
 
 See how:
-  - `repoURL: https://github.com/dporg-odowdaibm/dp01-ops.git` identifies the
-    repository where the YAMLs are located
+  - `repoURL: https://github.com/$GITORG/dp01-ops.git` identifies the
+    repository where the YAMLs are located ($GITORG will be replaced with your GitHub organisation)
   - `targetRevision: main` identifies the branch within the repository
   - `path: environments/dev/dp01/` identifies the folder within the repository
 
 ## Deploy `dp01-argo` to the cluster
 
-Let's deploy this ArgoCD application to the cluster:
+Let's deploy this ArgoCD application to the cluster. We use the `envsubst` command to replace $GITORG with your GitHub organisation:
 
 ```bash
-oc apply -f environments/dev/argocd/dp01.yaml
+envsubst < environments/dev/argocd/dp01.yaml | oc apply -f - 
 ```
 
 which will complete with:
