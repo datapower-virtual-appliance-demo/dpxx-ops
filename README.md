@@ -815,11 +815,20 @@ The Tekton pipeline now has access to your GitHub.
 
 ## An ArgoCD application to manage `dp01`
 
-Finally, we're going to create an ArgoCD application to manage `dp01`.
+Finally, we're going to create an ArgoCD application to manage the virtual
+appliance `dp01`. The YAMLs for `dp01` will be created by its Tekton pipeline in
+`dp01-ops`. Every time this repository is updated, our ArgoCD application will
+ensure that the latest version of `dp01` is deployed to the cluster.
+
+Let's have a quick look at our ArgoCD application.
+
+Issue the following command:
 
 ```bash
 cat environments/dev/argocd/dp01.yaml
 ```
+
+which will show its YAML:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -848,8 +857,8 @@ spec:
       - Replace=true
 ```
 
-Notice how the Argo application will monitor GitHub for resources to
-deploy to the cluster:
+Notice how the Argo application monitors a specific GitHub location for
+resources to deploy to the cluster:
 
 ```yaml
   source:
@@ -866,10 +875,13 @@ See how:
 
 ## Deploy `dp01-argo` to the cluster
 
-Let's deploy this ArgoCD application to the cluster. We use the `envsubst` command to replace $GITORG with your GitHub organisation:
+Let's deploy this ArgoCD application to the cluster. We use the `envsubst`
+command to replace $GITORG with your GitHub organisation.
+
+Issue the following command:
 
 ```bash
-envsubst < environments/dev/argocd/dp01.yaml | oc apply -f - 
+envsubst < environments/dev/argocd/dp01.yaml | oc apply -f -
 ```
 
 which will complete with:
@@ -910,19 +922,22 @@ You will see the following screen:
 
 ![diagram4](./docs/images/diagram4.png)
 
-The ArgoCD application `dp01-argo` is monitoring the
-`https://github.com/ODOWDAIBM/dp01-ops` repository.
+Notice how the ArgoCD application `dp01-argo` is monitoring the
+`https://github.com/dporg-odowdaibm/dp01-ops` repository for YAMLs in the
+`environments/dev/dp01` folder.
 
-In the next step we will run the Tekton pipeline to populate this repository.
+In the next step we will run the Tekton pipeline that populates this repository
+folder with the YAMLs for the `dp01` virtual appliance.
 
 ---
 
 ## Congratulations
 
-You've set up your cluster for DataPower.  Let's run a pipeline to populate the
-repository.
+You've configured your cluster for DataPower. Let's run a pipeline to populate
+the `dp01-ops` repository. This pipeline is held in the source repository
+`dp01-src`; it also holds the configuration for the `dp01` virtual DataPower
+appliance.
 
 Continue [here](https://github.com/dp-auto/dpxx-src#readme):
 
 ---
-
