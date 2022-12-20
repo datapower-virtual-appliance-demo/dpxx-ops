@@ -813,6 +813,15 @@ The Tekton pipeline now has access to your GitHub.
 
 ---
 
+## Image registry
+
+Allow Tekton to write to image registry
+
+```bash
+oc adm policy  add-cluster-role-to-user edit system:serviceaccount:dp01-ci:pipeline
+```
+---
+
 ## An ArgoCD application to manage `dp01`
 
 Finally, we're going to create an ArgoCD application to manage the virtual
