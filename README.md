@@ -769,7 +769,7 @@ Finally, add this secret to the `pipeline` service account to allow it to use
 
 ```bash
 oc patch serviceaccount pipeline \
-    --namespace dp01-dev \
+    --namespace dp01-ci \
     --type merge \
     --patch '{"secrets":[{"name":"dp01-ssh-credentials"}]}'
 ```
