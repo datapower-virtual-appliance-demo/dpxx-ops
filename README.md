@@ -295,9 +295,9 @@ which will shows these namespaces and their age, for example:
 
 ```bash
 NAME      STATUS   AGE
-dp01-ci   Active   27d
+dp01-ci   Active   18s
 NAME       STATUS   AGE
-dp01-dev   Active   35d
+dp01-dev   Active   18s
 ```
 
 During this tutorial, we'll see how:
