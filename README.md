@@ -225,6 +225,7 @@ Issue the following commands to create this folder structure and clone the
 mkdir -p $HOME/git/$GITORG-tutorial
 cd $HOME/git/$GITORG-tutorial
 git clone git@github.com:$GITORG/dp01-ops.git
+cd dp01-ops
 ```
 
 ---
