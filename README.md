@@ -723,7 +723,7 @@ where `install-xxxxx` is the name of the Tekton install plan.
 Again, feel free to verify the Tekton installation with the following commands:
 
 ```bash
-oc get clusterserviceversion -n openshift-pipelines
+oc get clusterserviceversion -n openshift-operators
 ```
 
 (replacing `x.y.z` with the installed version of Tekton)
