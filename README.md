@@ -147,13 +147,14 @@ and `dp01-ops` repositories in this tutorial.
 We now define some environment variables that are used by the commands in this
 tutorial to make them easy to use.
 
-Define your GitHub organization name in the `GITORG` variable using the name you
-supplied above, e.g. `dporg-xxxxx`.
+Define your GitHub user name in the `GITUSER` variable using the name you
+supplied above, e.g. `odowdaibm`. Your GitHub user name will be used to 
 
 Open a new Terminal window and type:
 
 ```bash
-export GITORG=dporg-odowdaibm
+export GITUSER=odowdaibm
+export GITORG=dporg-$GITUSER
 ```
 
 Let's use this environment variable to examine your new organization in GitHub.
