@@ -755,13 +755,19 @@ Issue the following command to create a secret containing the  SSH private key
 and `known_hosts` file:
 
 ```bash
-oc create secret generic dp01-ssh-credentials -n dp01-ci --from-file=id_rsa=./.ssh/id_rsa --from-file=known_hosts=./.ssh/known_hosts --from-file=./.ssh/config --dry-run=client -o yaml > .ssh/dp-git-credentials.yaml
+#oc create secret generic dp01-git-credentials -n dp01-ci --from-file=id_rsa=./.ssh/id_rsa --from-file=known_hosts=./.ssh/known_hosts --from-file=./.ssh/config --dry-run=client -o yaml > .ssh/dp-git-credentials.yaml
+dp01-ssh-credentials
+oc create secret generic dp01-git-credentials -n dp01-ci \
+  --from-literal=username=$GITUSER \
+  --from-literal=password=$GITTOKEN \
+  --type=github.com/basic-auth \
+  --dry-run=client -o yaml > .ssh/dp-git-credentials.yaml
 ```
 
 Issue the following command to create this secret in the cluster:
 
 ```bash
-oc apply -f .ssh/dp-git-credentials.yaml
+oc apply -f .ssh/dp01-git-credentials.yaml
 ```
 
 Finally, add this secret to the `pipeline` service account to allow it to use
