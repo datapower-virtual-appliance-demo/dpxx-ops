@@ -819,7 +819,8 @@ The Tekton pipeline now has access to your GitHub.
 Allow Tekton to write to image registry
 
 ```bash
-oc adm policy  add-cluster-role-to-user edit system:serviceaccount:dp01-ci:pipeline
+// oc adm policy  add-cluster-role-to-user edit system:serviceaccount:dp01-ci:pipeline // not sure we need this?
+oc policy add-role-to-user system:image-puller system:serviceaccount:dp01-dev:dp01-datapower-pod-service-account --namespace=dp01-ci
 ```
 ---
 
