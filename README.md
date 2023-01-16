@@ -762,7 +762,7 @@ oc create secret generic dp01-git-credentials -n dp01-ci \
   --from-literal=username=$GITUSER \
   --from-literal=password=$GITTOKEN \
   --type=github.com/basic-auth \
-  --dry-run=client -o yaml > .ssh/dp-git-credentials.yaml
+  --dry-run=client -o yaml > .ssh/dp01-git-credentials.yaml
 ```
 
 Issue the following command to create this secret in the cluster:
