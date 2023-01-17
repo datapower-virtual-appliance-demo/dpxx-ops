@@ -737,13 +737,10 @@ oc describe csv openshift-pipelines-operator-rh.vx.y.z -n openshift-operators
 
 ## Generate ssh keys for GitHub access
 
-To allow Tekton to access GitHub, specifically to create YAMLs in the `dp01-ops`
-repository, we need to set up appropriate SSH keys for access.
-
-Issue the following command to create an SSH key pair:
+To allow Tekton to access GitHub, we use [Personal Access Tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). PATs ensure that `pipeline` service account used by Tekton only has access to the `dp01-src` and `dp01-ops` repositories in its organization. The access token is stored as a secret in the dp01-ci` namespace.
 
 ```bash
-ssh-keygen -t rsa -b 4096 -C "your_email@example.com" -f ./.ssh/id_rsa -q -N ""
+export GITTOKEN=<value from GitHub>
 ```
 
 Issue the following command to create a `known_hosts` file for SSH access:
@@ -752,17 +749,15 @@ Issue the following command to create a `known_hosts` file for SSH access:
 ssh-keyscan -t rsa github.com | tee ./.ssh/github-key-temp | ssh-keygen -lf - && cat ./.ssh/github-key-temp >> ./.ssh/known_hosts
 ```
 
-Issue the following command to create a secret containing the  SSH private key
-and `known_hosts` file:
+Issue the following command to create a secret containing the PAT:
 
 ```bash
-#oc create secret generic dp01-git-credentials -n dp01-ci --from-file=id_rsa=./.ssh/id_rsa --from-file=known_hosts=./.ssh/known_hosts --from-file=./.ssh/config --dry-run=client -o yaml > .ssh/dp-git-credentials.yaml
-dp01-ssh-credentials
-oc create secret generic dp01-git-credentials -n dp01-ci \
-  --from-literal=username=$GITUSER \
-  --from-literal=password=$GITTOKEN \
-  --type=github.com/basic-auth \
-  --dry-run=client -o yaml > .ssh/dp01-git-credentials.yaml
+export GITCONFIG=$(printf "[credential \"https://github.com\"]\n  helper = store")
+oc create secret generic dp01-git-credentials -n dp01-ci \                        
+  --from-literal=.gitconfig=$GITCONFIG \
+  --from-literal=.git-credentials="https://$GITUSER:$GITTOKEN@github.com" \
+  --type=Opaque \
+  --dry-run=client -o yaml > dp01-git-credentials.yaml
 ```
 
 Issue the following command to create this secret in the cluster:
