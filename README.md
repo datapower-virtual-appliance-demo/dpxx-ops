@@ -735,9 +735,28 @@ oc describe csv openshift-pipelines-operator-rh.vx.y.z -n openshift-operators
 
 ---
 
-## Generate ssh keys for GitHub access
+## Create Personal Access Token for GitHub access
 
-To allow Tekton to access GitHub, we use [Personal Access Tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). PATs ensure that `pipeline` service account used by Tekton only has access to the `dp01-src` and `dp01-ops` repositories in its organization. The access token is stored as a secret in the dp01-ci` namespace.
+To allow our Tekton pipeline to access GitHub, we use a [Personal Access Token (**PAT**)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). A PAT ensures that service account used by Tekton only has access to the `dp01-src` and `dp01-ops` repositories in its owning organization -- and no other repositories. The PAT token is stored as a secret in the dp01-ci` namespace.
+
+Let's create a PAT:
+
+Issue this command to determine the URL
+
+```bash
+echo https://github.com/organizations/$GITORG/settings/personal-access-tokens
+```
+
+which will respond with a vale such as:
+
+```bash
+https://github.com/organizations/dporg-odowdaibm2/settings/personal-access-tokens
+```
+
+Navigate to this URL in your Browser:
+
+<<<here!
+
 
 ```bash
 export GITTOKEN=<value from GitHub>
