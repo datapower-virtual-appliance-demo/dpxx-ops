@@ -778,7 +778,7 @@ Finally, add this secret to the `pipeline` service account to allow it to use
 oc patch serviceaccount pipeline \
     --namespace dp01-ci \
     --type merge \
-    --patch '{"secrets":[{"name":"dp01-ssh-credentials"}]}'
+    --patch '{"secrets":[{"name":"dp01-git-credentials"}]}'
 ```
 
 ---
