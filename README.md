@@ -735,9 +735,9 @@ oc describe csv openshift-pipelines-operator-rh.vx.y.z -n openshift-operators
 
 ---
 
-## Enable PAT for your repo
+## Enable Personal Access Tokens for your new organization
 
-To allow our Tekton pipeline to access GitHub, we use a [Personal Access Token ](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) (**PAT**). This feature needs to be enabled via the GitHub web interface; let's do that now.
+To allow our Tekton pipeline to access GitHub, we use a [Personal Access Token ](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) (**PAT**). Let's use the GitHub web interface to enable this feature.
 
 Issue the following command:
 
