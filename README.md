@@ -749,7 +749,7 @@ https://github.com/organizations/$GITORG/settings/personal-access-tokens-onboard
 
 Enter your generated URL into your browser to see the workflow that will enable PAT for your GitHub organization:
 
-<img src="./docs/images/diagram12.png" alt="drawing" width="800"/>
+<img src="./docs/images/diagram14.png" alt="drawing" width="800"/>
 
 
 ## Create Personal Access Token for GitHub access
