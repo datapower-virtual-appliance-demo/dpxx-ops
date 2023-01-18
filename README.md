@@ -737,7 +737,7 @@ oc describe csv openshift-pipelines-operator-rh.vx.y.z -n openshift-operators
 
 ## Enable Personal Access Tokens for your new organization
 
-To allow our Tekton pipeline to access GitHub, we use a [Personal Access Token ](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) (**PAT**). Let's use the GitHub web interface to enable this feature.
+To allow our Tekton pipeline to access the repositories in our new Git organization, we use a [Personal Access Token ](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) (**PAT**). First, we must enable this feature using the GitHub web.
 
 Issue the following command:
 
@@ -745,49 +745,51 @@ Issue the following command:
 https://github.com/organizations/$GITORG/settings/personal-access-tokens-onboarding
 ```
 
-Enter your generated URL into your browser to see the workflow that will enable PAT for your GitHub organization:
+Navigate to this URL in your browser and complete the workflow:
 
 <img src="./docs/images/diagram14.png" alt="drawing" width="800"/>
 
-Select the following options via their radio buttons
+Select the following options via their radio buttons:
 
 1. Select `Allow access via fine-grained personal access tokens` and hit `Continue`
 2. Select `Do not require administrator approval` and hit `Continue`
 3. Select `Allow access via personal access tokens (classic)` and hit `Continue` 
 4. Complete the process and hit `Enroll` to enable PATs for your organization 
 
+Personal Access Tokens are now enabled for your GitHub organization.
+
 ## Create Personal Access Token for GitHub access
 
-A PAT ensures that service account used by Tekton only has access to the `dp01-src` and `dp01-ops` repositories in its owning organization -- and no other repositories. The PAT token is stored as a secret in the dp01-ci` namespace.
+We now create a PAT for the Tekton pipeline. We'll use it to ensure that the service account used by Tekton can only access repositories in the new itHub organization. The PAT is stored as a secret in the `dp01-ci` namespace and used by the pipeline whenever it needs to access the `dp01-src` and `dp01-ops` repositories.
 
-
-Let's create a PAT:
-
-Issue this command to determine the URL
+Issue this command:
 
 ```bash
 echo https://github.com/organizations/$GITORG/settings/personal-access-tokens
 ```
 
-which will respond with a vale such as:
-
-```bash
-https://github.com/organizations/dporg-odowdaibm2/settings/personal-access-tokens
-```
-
 Navigate to this URL in your Browser:
 
-<<<here!
+Complete the page as follows:
+
+1. `Token Name`: `Tekton pipeline service account`
+2. `Description`: `This token allows a user to clone repositories and create/merge PRs`
+3. `Resource Owner` drop-down:  Select your organization e.g. `dporg-odowdaibm`
+4. Select the `All repositories` radio button
+5. Under permissions select
+   * `Contents`: `Read and write`
+   * `Pull requests` : `Read and write`
+
+Click on `Generate token` to create a PAT which has the above access encoded within it.
+
+
+
+## Store PAT for use by Tekton
+
 
 
 ```bash
 export GITTOKEN=<value from GitHub>
-```
-
-Issue the following command to create a `known_hosts` file for SSH access:
-
-```bash
-ssh-keyscan -t rsa github.com | tee ./.ssh/github-key-temp | ssh-keygen -lf - && cat ./.ssh/github-key-temp >> ./.ssh/known_hosts
 ```
 
 Issue the following command to create a secret containing the PAT:
