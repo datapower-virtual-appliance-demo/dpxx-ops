@@ -760,7 +760,7 @@ Personal Access Tokens are now enabled for your GitHub organization.
 
 ## Create Personal Access Token for GitHub access
 
-We now create a PAT for the Tekton pipeline. We'll use it to ensure that the service account used by Tekton can only access repositories in the new itHub organization. The PAT is stored as a secret in the `dp01-ci` namespace and used by the pipeline whenever it needs to access the `dp01-src` and `dp01-ops` repositories.
+We now create a PAT for the Tekton pipeline. We'll use it to ensure that the service account used by Tekton can only access repositories in the new GitHub organization. 
 
 Issue this command:
 
@@ -769,6 +769,8 @@ echo https://github.com/organizations/$GITORG/settings/personal-access-tokens
 ```
 
 Navigate to this URL in your Browser:
+
+<img src="./docs/images/diagram15.png" alt="drawing" width="800"/>
 
 Complete the page as follows:
 
@@ -786,7 +788,7 @@ Click on `Generate token` to create a PAT which has the above access encoded wit
 
 ## Store PAT for use by Tekton
 
-
+The PAT is now stored as a secret in the `dp01-ci` namespace and used by the pipeline whenever it needs to access the `dp01-src` and `dp01-ops` repositories.
 
 ```bash
 export GITTOKEN=<value from GitHub>
