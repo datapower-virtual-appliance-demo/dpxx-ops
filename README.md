@@ -784,6 +784,8 @@ Complete the page as follows:
 
 Click on `Generate token` to create a PAT which has the above access encoded within it.
 
+<img src="./docs/images/diagram16.png" alt="drawing" width="800"/>
+
 
 
 ## Store PAT for use by Tekton
