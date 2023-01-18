@@ -735,9 +735,27 @@ oc describe csv openshift-pipelines-operator-rh.vx.y.z -n openshift-operators
 
 ---
 
+## Enable PAT for your repo
+
+To allow our Tekton pipeline to access GitHub, we use a [Personal Access Token (**PAT**)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). 
+
+We need to enable thsi feature in GitHub
+
+Issue the following command
+
+```bash
+https://github.com/organizations/$GITORG/settings/personal-access-tokens-onboarding
+```
+
+Enter your generated URL into your browser to see the workflow that will enable PAT for your GitHub organization:
+
+<img src="./docs/images/diagram12.png" alt="drawing" width="800"/>
+
+
 ## Create Personal Access Token for GitHub access
 
-To allow our Tekton pipeline to access GitHub, we use a [Personal Access Token (**PAT**)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). A PAT ensures that service account used by Tekton only has access to the `dp01-src` and `dp01-ops` repositories in its owning organization -- and no other repositories. The PAT token is stored as a secret in the dp01-ci` namespace.
+A PAT ensures that service account used by Tekton only has access to the `dp01-src` and `dp01-ops` repositories in its owning organization -- and no other repositories. The PAT token is stored as a secret in the dp01-ci` namespace.
+
 
 Let's create a PAT:
 
