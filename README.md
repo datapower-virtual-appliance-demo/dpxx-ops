@@ -737,11 +737,9 @@ oc describe csv openshift-pipelines-operator-rh.vx.y.z -n openshift-operators
 
 ## Enable PAT for your repo
 
-To allow our Tekton pipeline to access GitHub, we use a [Personal Access Token (**PAT**)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). 
+To allow our Tekton pipeline to access GitHub, we use a [Personal Access Token ](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) (**PAT**). This feature needs to be enabled via the GitHub web interface; let's do that now.
 
-We need to enable thsi feature in GitHub
-
-Issue the following command
+Issue the following command:
 
 ```bash
 https://github.com/organizations/$GITORG/settings/personal-access-tokens-onboarding
@@ -751,6 +749,12 @@ Enter your generated URL into your browser to see the workflow that will enable 
 
 <img src="./docs/images/diagram14.png" alt="drawing" width="800"/>
 
+Select the following options via their radio buttons
+
+1. Select `Allow access via fine-grained personal access tokens` and hit `Continue`
+2. Select `Do not require administrator approval` and hit `Continue`
+3. Select `Allow access via personal access tokens (classic)` and hit `Continue` 
+4. Complete the process and hit `Enroll` to enable PATs for your organization 
 
 ## Create Personal Access Token for GitHub access
 
@@ -812,44 +816,6 @@ oc patch serviceaccount pipeline \
     --type merge \
     --patch '{"secrets":[{"name":"dp01-git-credentials"}]}'
 ```
-
----
-
-## Copy ssh credential into Github
-
-To allow the Tekton pipeline to push the generated DataPower Kubernetes resource
-YAMLs to the `dp01-ops` repository, we need to add the public key we've just
-generated to GitHub.
-
-Use the following link in a browser to access the GitHub user interface to add
-an SSH public key:
-
-```bash
-https://github.com/settings/keys
-```
-
-You'll see the following page:
-
-![diagram2](./docs/images/diagram2.png)
-
-Copy your public key to the clipboard:
-
-```bash
-pbcopy < ./.ssh/id_rsa.pub
-```
-
-Click on `New SSH Key`, and complete the following details:
-
-* Add name `dp01 SSH key`
-* Paste key into box
-
-![diagram3](./docs/images/diagram3.png)
-
-* Hit `Add SSH key` button
-
-The Tekton pipeline now has access to your GitHub.
-
-*(Might be better to use access tokens, to limit scope... consider as change.)*
 
 ---
 
