@@ -6,9 +6,8 @@ metadata:
 spec:
   dnsNames:
     - dummy.domain.com
+  type: opaque
   secretName: dp01-booking-service-secret1
-  additionalOutputFormats:
-  - type: CombinedPEM
   issuerRef:
     name: datapower-selfsigned-issuer
   duration: 2160h # 90d
@@ -22,7 +21,7 @@ spec:
   isCA: false
   privateKey:
     algorithm: RSA
-    encoding: SHA256
+    encoding: PKCS1
     size: 4096
   usages:
     - server auth
