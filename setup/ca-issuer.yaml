@@ -1,0 +1,7 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: datapower-selfsigned-issuer
+  namespace: dp01-dev
+spec:
+  selfSigned: {}
