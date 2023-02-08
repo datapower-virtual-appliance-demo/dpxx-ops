@@ -7,6 +7,27 @@ spec:
   dnsNames:
     - example.com
   secretName: dp01-booking-service-secret1
+  additionalOutputFormats:
+  - type: CombinedPEM
   issuerRef:
     name: datapower-selfsigned-issuer
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  subject:
+    organizations:
+      - datapower-org
+  # The use of the common name field has been deprecated since 2000 and is
+  # discouraged from being used.
+  commonName: dummy.domain.com
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    encoding: SHA256
+    size: 4096
+  usages:
+    - server auth
+    - client auth
+  # At least one of a DNS Name, URI, or IP address is required.
+  dnsNames:
+    - dummy.domain.com
 ---
