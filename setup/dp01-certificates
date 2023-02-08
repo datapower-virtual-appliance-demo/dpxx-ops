@@ -5,7 +5,7 @@ metadata:
   namespace: dp01-dev
 spec:
   dnsNames:
-    - example.com
+    - dummy.domain.com
   secretName: dp01-booking-service-secret1
   additionalOutputFormats:
   - type: CombinedPEM
@@ -27,7 +27,4 @@ spec:
   usages:
     - server auth
     - client auth
-  # At least one of a DNS Name, URI, or IP address is required.
-  dnsNames:
-    - dummy.domain.com
 ---
