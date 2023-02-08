@@ -9,3 +9,4 @@ spec:
   secretName: selfsigned-cert-tls
   issuerRef:
     name: datapower-selfsigned-issuer
+---
