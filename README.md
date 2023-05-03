@@ -415,7 +415,7 @@ See how the operator has been successfully installed at version 1.5.10.
 Feel free to explore this CSV:
 
 ```bash
-oc describe csv openshift-gitops-operator.v1.5.7 -n openshift-operators
+oc describe csv openshift-gitops-operator.v1.5.10 -n openshift-operators
 ```
 
 The output provides an extensive amount of information not listed
