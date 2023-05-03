@@ -402,15 +402,15 @@ CSV for ArgoCD.
 Issue the following command:
 
 ```bash
-oc get clusterserviceversion openshift-gitops-operator.v1.5.7 -n openshift-gitops
+oc get clusterserviceversion openshift-gitops-operator.v1.5.10 -n openshift-gitops
 ```
 
 ```bash
 NAME                               DISPLAY                    VERSION   REPLACES                                          PHASE
-openshift-gitops-operator.v1.5.7   Red Hat OpenShift GitOps   1.5.7     openshift-gitops-operator.v1.5.6-0.1664915551.p   Succeeded
+openshift-gitops-operator.v1.5.10  Red Hat OpenShift GitOps   1.5.10    openshift-gitops-operator.v1.5.6-0.1664915551.p   Succeeded
 ```
 
-See how the operator has been successfully installed at version 1.5.7.
+See how the operator has been successfully installed at version 1.5.10.
 
 Feel free to explore this CSV:
 
