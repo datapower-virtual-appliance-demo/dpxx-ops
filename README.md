@@ -751,7 +751,7 @@ To allow our Tekton pipeline to access the repositories in our new Git organizat
 Issue the following command:
 
 ```bash
-https://github.com/organizations/$GITORG/settings/personal-access-tokens-onboarding
+echo https://github.com/organizations/$GITORG/settings/personal-access-tokens-onboarding
 ```
 
 Navigate to this URL in your browser and complete the workflow:
