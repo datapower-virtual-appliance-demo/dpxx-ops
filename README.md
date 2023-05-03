@@ -192,7 +192,7 @@ the `dpxx-ops` template repository:
 
 <img src="./docs/images/diagram11.png" alt="drawing" width="800"/>
 
-This screen allows you to define the properties for you copy of the `dp01-src`
+This screen allows you to define the properties for your copy of the `dp01-ops`
 repository.
 
 Specifically:
