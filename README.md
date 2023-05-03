@@ -62,6 +62,15 @@ Minikube.
 
 ---
 
+## Install Kubernetes CLI
+
+To interact with your cluster from your local machine, you will need to use the 
+`kubectl` or `oc` command line interface.
+
+Add instructions to install `kubectl` or `oc` CLI.
+
+---
+
 ## Login to the cluster
 
 From the your OpenShift web console console, select `Copy login command`, and
@@ -225,7 +234,7 @@ Issue the following commands to create this folder structure and clone the
 ```bash
 mkdir -p $HOME/git/$GITORG-tutorial
 cd $HOME/git/$GITORG-tutorial
-git clone git@github.com:$GITORG/dp01-ops.git
+git clone https://github.com/$GITORG/dp01-ops.git
 cd dp01-ops
 ```
 
