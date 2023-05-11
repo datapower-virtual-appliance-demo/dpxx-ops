@@ -771,13 +771,7 @@ Personal Access Tokens are now enabled for your GitHub organization.
 
 We now create a PAT for the Tekton pipeline. We'll use it to ensure that the service account used by Tekton can only access repositories in the new GitHub organization. 
 
-Issue this command:
-
-```bash
-echo https://github.com/organizations/$GITORG/settings/personal-access-tokens
-```
-
-Navigate to this URL in your Browser:
+Navigate to https://github.com/settings/tokens?type=beta in your Browser:
 
 <img src="./docs/images/diagram15.png" alt="drawing" width="800"/>
 
