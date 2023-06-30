@@ -218,6 +218,7 @@ Specifically:
 <br> You have successfully created a copy of the `dp01-ops` repository in your
 organization.
 
+---
 
 ## Enable Personal Access Tokens for your new organization
 
