@@ -279,7 +279,7 @@ In the meantime, we're going to store in an environment variable.
 export GITTOKEN=<PAT copied from GitHub>
 ```
 
-Let's now use this token to create our own copies of the `dp01-src` and dp01-ops` 
+Let's now use this token to create our own copies of the `dp01-src` and `dp01-ops` 
 repositories.
 
 ---
