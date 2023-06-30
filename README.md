@@ -218,6 +218,69 @@ Specifically:
 <br> You have successfully created a copy of the `dp01-ops` repository in your
 organization.
 
+
+## Enable Personal Access Tokens for your new organization
+
+To allow sufficient, but limited, access the repositories in our new Git organization, we use a [Personal Access Token ](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) (**PAT**). First, we must enable this feature using the GitHub web.
+
+Issue the following command:
+
+```bash
+echo https://github.com/organizations/$GITORG/settings/personal-access-tokens-onboarding
+```
+
+Navigate to this URL in your browser and complete the workflow:
+
+<img src="./docs/images/diagram14.png" alt="drawing" width="800"/>
+
+Select the following options via their radio buttons:
+
+1. Select `Allow access via fine-grained personal access tokens` and hit `Continue`
+2. Select `Do not require administrator approval` and hit `Continue`
+3. Select `Allow access via personal access tokens (classic)` and hit `Continue` 
+4. Complete the process and hit `Enroll` to enable PATs for your organization 
+
+Personal Access Tokens are now enabled for your GitHub organization.
+
+## Create Personal Access Token for GitHub access
+
+We now create a PAT to limit access to only repositories in the new GitHub organization. 
+This token will be used by the tutorial CLI and Tekton service account, thereby limiting 
+exposure of your other GitHub resources; this is a nice example of **Zero Trust** security, 
+limiting access to only what's required.
+
+Navigate to https://github.com/settings/tokens?type=beta in your Browser:
+
+<img src="./docs/images/diagram15.png" alt="drawing" width="800"/>
+
+Complete the page as follows:
+
+1. `Token Name`: `DataPower tutorial access`
+2. `Description`: `This token allows a user to clone repositories and create/merge PRs`
+3. `Resource Owner` drop-down:  Select your organization e.g. `dporg-odowdaibm`
+4. Select the `All repositories` radio button
+5. Under permissions select
+   * `Contents`: `Read and write`
+   * `Pull requests` : `Read and write`
+
+Click on `Generate token` to create a PAT which has the above access encoded within it.
+
+<img src="./docs/images/diagram16.png" alt="drawing" width="800"/>
+
+---
+
+## Store PAT for later use
+
+Copy the PAT token and store ina file on your local machine; we'll use it later.
+
+In the meantime, we're going to store in an environment variable.
+```bash
+export GITTOKEN=<PAT copied from GitHub>
+```
+
+Let's now use this token to create our own copies of the `dp01-src` and dp01-ops` 
+repositories.
+
 ---
 
 ## Clone repository to your local machine
@@ -744,60 +807,9 @@ oc describe csv openshift-pipelines-operator-rh.vx.y.z -n openshift-operators
 
 ---
 
-## Enable Personal Access Tokens for your new organization
+## Create a secret to contain the PAT for use by Tekton.
 
-To allow our Tekton pipeline to access the repositories in our new Git organization, we use a [Personal Access Token ](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) (**PAT**). First, we must enable this feature using the GitHub web.
-
-Issue the following command:
-
-```bash
-echo https://github.com/organizations/$GITORG/settings/personal-access-tokens-onboarding
-```
-
-Navigate to this URL in your browser and complete the workflow:
-
-<img src="./docs/images/diagram14.png" alt="drawing" width="800"/>
-
-Select the following options via their radio buttons:
-
-1. Select `Allow access via fine-grained personal access tokens` and hit `Continue`
-2. Select `Do not require administrator approval` and hit `Continue`
-3. Select `Allow access via personal access tokens (classic)` and hit `Continue` 
-4. Complete the process and hit `Enroll` to enable PATs for your organization 
-
-Personal Access Tokens are now enabled for your GitHub organization.
-
-## Create Personal Access Token for GitHub access
-
-We now create a PAT for the Tekton pipeline. We'll use it to ensure that the service account used by Tekton can only access repositories in the new GitHub organization. 
-
-Navigate to https://github.com/settings/tokens?type=beta in your Browser:
-
-<img src="./docs/images/diagram15.png" alt="drawing" width="800"/>
-
-Complete the page as follows:
-
-1. `Token Name`: `Tekton pipeline service account`
-2. `Description`: `This token allows a user to clone repositories and create/merge PRs`
-3. `Resource Owner` drop-down:  Select your organization e.g. `dporg-odowdaibm`
-4. Select the `All repositories` radio button
-5. Under permissions select
-   * `Contents`: `Read and write`
-   * `Pull requests` : `Read and write`
-
-Click on `Generate token` to create a PAT which has the above access encoded within it.
-
-<img src="./docs/images/diagram16.png" alt="drawing" width="800"/>
-
-
-
-## Store PAT for use by Tekton
-
-The PAT is now stored as a secret in the `dp01-ci` namespace and used by the pipeline whenever it needs to access the `dp01-src` and `dp01-ops` repositories.
-
-```bash
-export GITTOKEN=<value from GitHub>
-```
+The PAT we created earlier is now stored as a secret in the `dp01-ci` namespace and used by the pipeline whenever it needs to access the `dp01-src` and `dp01-ops` repositories.
 
 Issue the following command to create a secret containing the PAT:
 
