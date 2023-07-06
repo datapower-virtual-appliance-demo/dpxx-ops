@@ -273,7 +273,7 @@ Click on `Generate token` to create a PAT which has the above access encoded wit
 
 ## Store PAT for later use
 
-Copy the PAT token and store ina file on your local machine; we'll use it later.
+Copy the PAT token and store in a file on your local machine; we'll use it later.
 
 In the meantime, we're going to store in an environment variable.
 ```bash
