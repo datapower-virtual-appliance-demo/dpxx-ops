@@ -817,7 +817,7 @@ Issue the following command to create a secret containing the PAT:
 ```bash
 export GITCONFIG=$(printf "[credential \"https://github.com\"]\n  helper = store")
 oc create secret generic dp01-git-credentials -n dp01-ci \                        
-  --from-literal=.gitconfig=$GITCONFIG \
+  --from-literal=.gitconfig="$GITCONFIG" \
   --from-literal=.git-credentials="https://$GITUSER:$GITTOKEN@github.com" \
   --type=Opaque \
   --dry-run=client -o yaml > dp01-git-credentials.yaml
