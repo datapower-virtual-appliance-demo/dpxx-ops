@@ -944,7 +944,7 @@ oc get route openshift-gitops-server -n openshift-gitops -o jsonpath='{"https://
 which will return a URL similar to this:
 
 ```bash
-https://openshift-gitops-server-openshift-gitops.vpc-mq-cluster1-d02cf90349a0fe46c9804e3ab1fe2643-0000.eu-gb.containers.appdomain.cloud
+https://openshift-gitops-server-openshift-gitops.apps.sno-ajo-1.snoajo1.com
 ```
 
 We will use this URL to log into the ArgoCD admin console to view our deployments. 
@@ -961,11 +961,11 @@ Login to ArgoCD with `admin` and `password`.
 > **Note**<br>
 > 
 > If DNS name resolution has not been set up for your cluster hostname, you will need
-> to add the URL hostname to your local machine  `/etc/hosts` file to identify the IP address of the ArgoCD server.
+> to add the URL hostname to your local machine  `/etc/hosts` file to identify the IP address of the ArgoCD server, e.g.:
 >
-> e.g. `141.125.162.227 openshift-gitops-server-openshift-gitops.apps.sno-ajo-1.snoajo1.com`
+> `141.125.162.227 openshift-gitops-server-openshift-gitops.apps.sno-ajo-1.snoajo1.com`
 
-Upong successful login, you will see the following screen:
+Upon successful login, you will see the following screen:
 
 ![diagram4](./docs/images/diagram4.png)
 
