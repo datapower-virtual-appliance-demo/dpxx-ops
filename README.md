@@ -299,7 +299,7 @@ Issue the following commands to create this folder structure and clone the
 ```bash
 mkdir -p $HOME/git/$GITORG-tutorial
 cd $HOME/git/$GITORG-tutorial
-git clone https://github.com/$GITORG/dp01-ops.git
+git clone https://$GITTOKEN@github.com/$GITORG/dp01-ops.git
 cd dp01-ops
 ```
 
