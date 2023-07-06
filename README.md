@@ -820,7 +820,7 @@ oc create secret generic dp01-git-credentials -n dp01-ci \
   --from-literal=.gitconfig="$GITCONFIG" \
   --from-literal=.git-credentials="https://$GITUSER:$GITTOKEN@github.com" \
   --type=Opaque \
-  --dry-run=client -o yaml > dp01-git-credentials.yaml
+  --dry-run=client -o yaml > .ssh/dp01-git-credentials.yaml
 ```
 
 Issue the following command to create this secret in the cluster:
