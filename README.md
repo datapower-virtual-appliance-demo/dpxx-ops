@@ -985,7 +985,7 @@ the `dp01-ops` repository. This pipeline is held in the source repository
 `dp01-src`; it also holds the configuration for the `dp01` virtual DataPower
 appliance.
 
-Continue [here](https://github.com/dp-auto/dpxx-src#fork-repository) to fork
+Continue [here](https://github.com/datapower-virtual-appliance-demo/dpxx-src#introduction) to fork
 your copy of the `dp01-src` repository.
 
 ---
