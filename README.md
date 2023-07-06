@@ -920,7 +920,7 @@ command to replace $GITORG with your GitHub organisation.
 Issue the following command:
 
 ```bash
-envsubst < environments/dev/argocd/dp01.yaml >> environments/dev/argocd/dp01.yaml
+envsubst < environments/dev/argocd/dp01.yaml > environments/dev/argocd/dp01.yaml
 oc apply -f environments/dev/argocd/dp01.yaml
 ```
 
