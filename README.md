@@ -206,6 +206,7 @@ repository.
 
 Specifically:
 
+* In the `Owner` dropdown, select your newly created organization, e.g. `dporg-xxxxx`
 * In the `Repository name` field, specify `dp01-ops`.
 * In the `Description` field, specify `Operational repository for DataPower`.
 * Select `Public` for the repository visibility.
