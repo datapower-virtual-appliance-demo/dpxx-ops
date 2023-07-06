@@ -958,9 +958,11 @@ oc extract secret/openshift-gitops-cluster -n openshift-gitops --keys="admin.pas
 
 Login to ArgoCD with `admin` and `password`.
 
-> **Note**<br> 
+> **Note**<br>
+> 
 > If DNS name resolution has not been set up for your cluster hostname, you will need
 > to add the URL hostname to your local machine  `/etc/hosts` file to identify the IP address of the ArgoCD server.
+>
 > e.g. `141.125.162.227 openshift-gitops-server-openshift-gitops.apps.sno-ajo-1.snoajo1.com`
 
 Upong successful login, you will see the following screen:
