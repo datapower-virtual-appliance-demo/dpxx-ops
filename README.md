@@ -673,7 +673,7 @@ spec:
   name: datapower-operator
   source: ibm-operator-catalog
   sourceNamespace: openshift-marketplace
-  startingCSV: datapower-operator.v1.6.4
+  startingCSV: datapower-operator.v1.6.8
 ```
 
 Notice how this operator is installed in the `openshift-operators` namespace.
@@ -704,18 +704,18 @@ Again, feel free to verify the DataPower installation with the following
 commands:
 
 ```bash
-oc get clusterserviceversion datapower-operator.v1.6.4 -n openshift-operators
+oc get clusterserviceversion datapower-operator.v1.6.8 -n openshift-operators
 ```
 
 ```bash
 NAME                                     DISPLAY                       VERSION   REPLACES                                          PHASE
-datapower-operator.v1.6.4                IBM DataPower Gateway         1.6.4     datapower-operator.v1.6.4                         Succeeded
+datapower-operator.v1.6.8                IBM DataPower Gateway         1.6.8                                                       Succeeded
 ```
 
-which shows that the 1.6.4 version of the operator has been successfully installed.
+which shows that the 1.6.8 version of the operator has been successfully installed.
 
 ```bash
-oc describe csv datapower-operator.v1.6.4 -n openshift-operators
+oc describe csv datapower-operator.v1.6.8 -n openshift-operators
 ```
 
 The output provides an extensive amount of information not listed
