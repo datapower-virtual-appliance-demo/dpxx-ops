@@ -261,9 +261,10 @@ Complete the page as follows:
 2. `Description`: `This token allows a user to clone repositories and create/merge PRs`
 3. `Resource Owner` drop-down:  Select your organization e.g. `dporg-odowdaibm`
 4. Select the `All repositories` radio button
-5. Under permissions select
+5. Under `Repository permissions` select:
    * `Contents`: `Read and write`
    * `Pull requests` : `Read and write`
+6. (No changes under `Organization permissions`)   
 
 Click on `Generate token` to create a PAT which has the above access encoded within it.
 
